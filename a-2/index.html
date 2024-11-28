@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>進撃のゾンビ</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #333;
+            font-family: Arial, sans-serif;
+            color: #fff;
+        }
+        canvas {
+            background: #222;
+            border: 2px solid #000;
+        }
+        .info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .info p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="info">
+        <p>資源: <span id="resources">50</span></p>
+        <p>拠点耐久値: <span id="baseHealth">100</span></p>
+        <p>次のウェーブまで: <span id="nextWave">10</span>秒</p>
+    </div>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // ゲーム設定
+        const GRID_SIZE = 40;
+        let resources = 50;
+        let baseHealth = 100;
+        let wave = 1;
+        let zombies = [];
+        let towers = [];
+        let nextWaveTimer = 10;
+
+        // ゾンビクラス
+        class Zombie {
+            constructor(x, y, speed, health) {
+                this.x = x;
+                this.y = y;
+                this.speed = speed;
+                this.health = health;
+                this.size = 30;
+            }
+
+            move() {
+                this.x -= this.speed;
+            }
+
+            draw() {
+                ctx.fillStyle = 'green';
+                ctx.fillRect(this.x, this.y, this.size, this.size);
+                ctx.fillStyle = 'white';
+                ctx.fillText(this.health, this.x + 5, this.y + 20);
+            }
+        }
+
+        // タワークラス
+        class Tower {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.range = 100;
+                this.attackSpeed = 1;
+                this.lastAttack = 0;
+            }
+
+            attack(zombies) {
+                const now = performance.now();
+                if (now - this.lastAttack > 1000 / this.attackSpeed) {
+                    this.lastAttack = now;
+                    for (const zombie of zombies) {
+                        const dx = zombie.x - this.x;
+                        const dy = zombie.y - this.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+
+                        if (distance < this.range) {
+                            zombie.health -= 10;
+                            if (zombie.health <= 0) {
+                                resources += 10;
+                            }
+                            return;
+                        }
+                    }
+                }
+            }
+
+            draw() {
+                ctx.fillStyle = 'blue';
+                ctx.fillRect(this.x - GRID_SIZE / 2, this.y - GRID_SIZE / 2, GRID_SIZE, GRID_SIZE);
+                ctx.strokeStyle = 'white';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.range, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+        }
+
+        // ゲーム初期化
+        function init() {
+            canvas.addEventListener('click', placeTower);
+            startWave();
+        }
+
+        // ゲームループ
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // ゾンビを描画＆移動
+            zombies.forEach((zombie, index) => {
+                zombie.move();
+                if (zombie.x < 0) {
+                    baseHealth -= 10;
+                    zombies.splice(index, 1);
+                } else if (zombie.health <= 0) {
+                    zombies.splice(index, 1);
+                } else {
+                    zombie.draw();
+                }
+            });
+
+            // タワーを描画＆攻撃
+            towers.forEach(tower => {
+                tower.draw();
+                tower.attack(zombies);
+            });
+
+            // 情報更新
+            document.getElementById('resources').textContent = resources;
+            document.getElementById('baseHealth').textContent = baseHealth;
+            document.getElementById('nextWave').textContent = Math.max(0, nextWaveTimer);
+
+            // 拠点が破壊された場合
+            if (baseHealth <= 0) {
+                alert('ゲームオーバー！');
+                return;
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // タワーを配置
+        function placeTower(event) {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            if (resources >= 20) {
+                towers.push(new Tower(x, y));
+                resources -= 20;
+            }
+        }
+
+        // ウェーブ開始
+        function startWave() {
+            for (let i = 0; i < wave * 5; i++) {
+                const y = Math.random() * (canvas.height - 40);
+                zombies.push(new Zombie(canvas.width + i * 50, y, 1 + wave * 0.1, 50 + wave * 10));
+            }
+            wave++;
+            nextWaveTimer = 10;
+
+            const waveInterval = setInterval(() => {
+                nextWaveTimer--;
+                if (nextWaveTimer <= 0) {
+                    clearInterval(waveInterval);
+                    startWave();
+                }
+            }, 1000);
+        }
+
+        // 初期化＆開始
+        init();
+        gameLoop();
+    </script>
+</body>
+</html>
