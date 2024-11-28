@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ポケポケ風バトル</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      background-color: #a8d0e6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .battle-screen {
+      width: 400px;
+      height: 300px;
+      border: 5px solid #000;
+      background-color: #fff;
+      position: relative;
+    }
+    .enemy {
+      position: absolute;
+      top: 20px;
+      left: 250px;
+      text-align: center;
+    }
+    .player {
+      position: absolute;
+      bottom: 100px;
+      left: 20px;
+      text-align: center;
+    }
+    .enemy img, .player img {
+      width: 80px;
+      height: 80px;
+    }
+    .battle-menu {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      background-color: #eee;
+      border-top: 2px solid #000;
+      padding: 10px;
+      display: flex;
+      justify-content: space-around;
+    }
+    .menu-option {
+      background-color: #f4a261;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      text-align: center;
+    }
+    .menu-option:hover {
+      background-color: #e76f51;
+    }
+    .log {
+      position: absolute;
+      top: 180px;
+      left: 10px;
+      right: 10px;
+      background: #e5e5e5;
+      border: 2px solid #000;
+      padding: 5px;
+      font-size: 14px;
+      height: 50px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="battle-screen">
+    <!-- Enemy Pokemon -->
+    <div class="enemy">
+      <h3>ワルポケ</h3>
+      <img src="images/warpoke.png" alt="Enemy Pokemon">
+      <p id="enemy-hp">HP: 100</p>
+    </div>
+    <!-- Player Pokemon -->
+    <div class="player">
+      <h3>マイポケ</h3>
+      <img src="images/mypoke.png" alt="Player Pokemon">
+      <p id="player-hp">HP: 120</p>
+    </div>
+    <!-- Battle Log -->
+    <div class="log" id="battle-log">
+      バトルが始まった！
+    </div>
+    <!-- Battle Menu -->
+    <div class="battle-menu">
+      <div class="menu-option" onclick="attack()">たたかう</div>
+      <div class="menu-option" onclick="useItem()">どうぐ</div>
+      <div class="menu-option" onclick="runAway()">にげる</div>
+    </div>
+  </div>
+
+  <script>
+    let playerHp = 120;
+    let enemyHp = 100;
+    const log = document.getElementById("battle-log");
+    const playerHpElement = document.getElementById("player-hp");
+    const enemyHpElement = document.getElementById("enemy-hp");
+
+    function attack() {
+      const playerDamage = Math.floor(Math.random() * 20) + 10;
+      const enemyDamage = Math.floor(Math.random() * 15) + 5;
+
+      enemyHp -= playerDamage;
+      if (enemyHp < 0) enemyHp = 0;
+
+      log.innerText = `マイポケは攻撃！ワルポケに${playerDamage}のダメージ！`;
+
+      setTimeout(() => {
+        if (enemyHp > 0) {
+          playerHp -= enemyDamage;
+          if (playerHp < 0) playerHp = 0;
+
+          log.innerText += `\nワルポケの反撃！マイポケに${enemyDamage}のダメージ！`;
+        }
+
+        updateHp();
+        checkBattleStatus();
+      }, 1000);
+    }
+
+    function useItem() {
+      const heal = Math.floor(Math.random() * 20) + 10;
+      playerHp += heal;
+      if (playerHp > 120) playerHp = 120;
+
+      log.innerText = `マイポケはアイテムを使った！HPが${heal}回復した！`;
+      updateHp();
+    }
+
+    function runAway() {
+      log.innerText = "マイポケは逃げ出した！バトル終了！";
+      disableMenu();
+    }
+
+    function updateHp() {
+      playerHpElement.innerText = `HP: ${playerHp}`;
+      enemyHpElement.innerText = `HP: ${enemyHp}`;
+    }
+
+    function checkBattleStatus() {
+      if (enemyHp <= 0) {
+        log.innerText += `\nワルポケを倒した！勝利！`;
+        disableMenu();
+      } else if (playerHp <= 0) {
+        log.innerText += `\nマイポケは倒れた…ゲームオーバー！`;
+        disableMenu();
+      }
+    }
+
+    function disableMenu() {
+      const menuOptions = document.querySelectorAll(".menu-option");
+      menuOptions.forEach(option => {
+        option.style.pointerEvents = "none";
+        option.style.backgroundColor = "#ccc";
+      });
+    }
+  </script>
+</body>
+</html>
