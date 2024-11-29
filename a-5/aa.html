@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>重力反転アクション</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #282c34;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            border: 2px solid white;
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // ゲームの基本設定
+        const canvasWidth = canvas.width;
+        const canvasHeight = canvas.height;
+
+        let gravity = 1; // 重力方向（1: 下, -1: 上）
+        let isGameOver = false;
+        let obstacles = [];
+        let frame = 0;
+
+        // プレイヤーの設定
+        const player = {
+            x: 50,
+            y: canvasHeight / 2,
+            width: 20,
+            height: 20,
+            speed: 0
+        };
+
+        // 障害物の設定
+        const obstacleWidth = 40;
+        const obstacleGap = 150;
+
+        // 障害物を生成する
+        function createObstacle() {
+            const minHeight = 50;
+            const maxHeight = canvasHeight - obstacleGap - minHeight;
+            const height = Math.floor(Math.random() * (maxHeight - minHeight) + minHeight);
+
+            obstacles.push({
+                x: canvasWidth,
+                topHeight: height,
+                bottomY: height + obstacleGap
+            });
+        }
+
+        // 障害物を描画
+        function drawObstacles() {
+            ctx.fillStyle = 'red';
+            obstacles.forEach(obstacle => {
+                ctx.fillRect(obstacle.x, 0, obstacleWidth, obstacle.topHeight); // 上の障害物
+                ctx.fillRect(obstacle.x, obstacle.bottomY, obstacleWidth, canvasHeight - obstacle.bottomY); // 下の障害物
+            });
+        }
+
+        // プレイヤーを描画
+        function drawPlayer() {
+            ctx.fillStyle = 'white';
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+        }
+
+        // 重力反転
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                gravity *= -1;
+            }
+        });
+
+        // ゲームオーバーチェック
+        function checkCollision() {
+            if (player.y <= 0 || player.y + player.height >= canvasHeight) {
+                isGameOver = true;
+            }
+
+            obstacles.forEach(obstacle => {
+                if (
+                    player.x < obstacle.x + obstacleWidth &&
+                    player.x + player.width > obstacle.x &&
+                    (player.y < obstacle.topHeight || player.y + player.height > obstacle.bottomY)
+                ) {
+                    isGameOver = true;
+                }
+            });
+        }
+
+        // メインゲームループ
+        function gameLoop() {
+            if (isGameOver) {
+                ctx.font = '30px Arial';
+                ctx.fillStyle = 'white';
+                ctx.fillText('Game Over', canvasWidth / 2 - 80, canvasHeight / 2);
+                return;
+            }
+
+            // 背景をクリア
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+            // プレイヤーの動き
+            player.speed += gravity * 0.5;
+            player.y += player.speed;
+
+            // 障害物の動き
+            if (frame % 120 === 0) {
+                createObstacle();
+            }
+            obstacles.forEach(obstacle => obstacle.x -= 2);
+
+            // 障害物を削除
+            obstacles = obstacles.filter(obstacle => obstacle.x + obstacleWidth > 0);
+
+            // 描画
+            drawPlayer();
+            drawObstacles();
+
+            // 衝突判定
+            checkCollision();
+
+            // 次のフレーム
+            frame++;
+            requestAnimationFrame(gameLoop);
+        }
+
+        // ゲーム開始
+        gameLoop();
+    </script>
+</body>
+</html>
