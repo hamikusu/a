@@ -1,0 +1,48 @@
+/* 背景の設定 */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-image: url('temple-background.jpg'); /* お寺の背景画像 */
+    background-size: cover;
+    background-position: center;
+    font-family: "Yu Mincho", serif; /* 和風の雰囲気を出すためのフォント */
+}
+
+/* コンテナのスタイル */
+.container {
+    text-align: center;
+    background-color: rgba(255, 248, 220, 0.8); /* 少し透けた背景でテキストを読みやすく */
+    padding: 20px;
+    border: 2px solid #daa520;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+    color: #8b4513;
+    font-size: 2em;
+}
+
+#result {
+    font-size: 1.5em;
+    margin-top: 20px;
+    color: #8b0000;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 1em;
+    color: #fff;
+    background-color: #8b4513;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #a0522d;
+}
