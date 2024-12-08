@@ -1,0 +1,128 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            font-size: 150px; /* カメラのサイズを150pxに設定 */
+            position: relative;
+            overflow: hidden; /* 画面外に出る💩を隠す */
+        }
+        .emoji {
+            cursor: pointer;
+            position: relative;
+        }
+        .poop {
+            position: absolute;
+            font-size: 50px;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        .explosion {
+            position: absolute;
+            font-size: 50px;
+            opacity: 0;
+            transition: opacity 0.5s, transform 0.5s;
+        }
+        .text {
+            position: absolute;
+            top: 20px; /* 画面の上から20pxの位置 */
+            right: 20px; /* 画面の右から20pxの位置 */
+            font-size: 24px; /* テキストのサイズ */
+            color: black; /* 初期のテキストの色 */
+            transition: color 0.5s; /* 色が変わるアニメーション */
+        }
+    </style>
+</head>
+<body>
+    <div class="emoji" id="cameraEmoji">🟡</div> <!-- 黄色の円を表示 -->
+    <div class="text" id="text">アイウエオ</div> <!-- 右上に「アイウエオ」を表示 -->
+
+    <script>
+        const cameraEmoji = document.getElementById('cameraEmoji');
+        const textElement = document.getElementById('text');
+
+        // 2秒後にテキストの色を黄色に変更
+        setTimeout(() => {
+            textElement.style.color = 'yellow';
+        }, 2000); // 2000ミリ秒後に色を変更
+
+        cameraEmoji.addEventListener('click', () => {
+            cameraEmoji.textContent = '📸';
+
+            // 爆発を30箇所生成して表示
+            for (let i = 0; i < 30; i++) {
+                const explosionEmoji = document.createElement('div');
+                explosionEmoji.className = 'explosion';
+                explosionEmoji.textContent = '💥';
+
+                // ランダムな位置に配置
+                const x = Math.random() * (window.innerWidth - 50); // 50pxの余白を考慮
+                const y = Math.random() * (window.innerHeight - 50); // 50pxの余白を考慮
+
+                explosionEmoji.style.left = `${x}px`;
+                explosionEmoji.style.top = `${y}px`;
+                document.body.appendChild(explosionEmoji);
+
+                // 💥を表示
+                setTimeout(() => {
+                    explosionEmoji.style.opacity = '1';
+                    explosionEmoji.style.transform = 'scale(1.5)'; // 爆発時に少し拡大
+                }, 10); // 少し遅れて表示
+
+                // 0.5秒後に💥を消す
+                setTimeout(() => {
+                    explosionEmoji.style.opacity = '0';
+                    setTimeout(() => {
+                        document.body.removeChild(explosionEmoji);
+                    }, 500); // opacityの消えるアニメーションの後に要素を削除
+                }, 500); // 0.5秒後に消す
+            }
+
+            // 0.5秒後に💩を出す
+            setTimeout(() => {
+                // 💩を50個生成して表示
+                for (let i = 0; i < 50; i++) {
+                    const poopEmoji = document.createElement('div');
+                    poopEmoji.className = 'poop';
+                    poopEmoji.textContent = '💩';
+
+                    // ランダムな位置に配置
+                    const x = Math.random() * (window.innerWidth - 50); // 50pxの余白を考慮
+                    const y = Math.random() * (window.innerHeight - 50); // 50pxの余白を考慮
+
+                    poopEmoji.style.left = `${x}px`;
+                    poopEmoji.style.top = `${y}px`;
+                    document.body.appendChild(poopEmoji);
+
+                    // 💩を表示
+                    setTimeout(() => {
+                        poopEmoji.style.opacity = '1';
+                    }, 10); // 少し遅れて表示
+
+                    // 0.7秒後に💩を消す
+                    setTimeout(() => {
+                        poopEmoji.style.opacity = '0';
+                        setTimeout(() => {
+                            document.body.removeChild(poopEmoji);
+                        }, 500); // opacityの消えるアニメーションの後に要素を削除
+                    }, 700); // 0.7秒に変更
+                }
+
+                // 2.2秒後に🟡に戻す（0.5秒の爆発 + 0.7秒の💩表示 + 1秒の余裕）
+                setTimeout(() => {
+                    cameraEmoji.textContent = '🟡'; // 元の絵文字に戻す
+                }, 2200); // 2200ミリ秒後に戻す
+            }, 500); // 爆発後に💩を出す
+        });
+    </script>
+</body>
+</html>
