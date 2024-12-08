@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>爆発するTNT</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #87CEEB;
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            position: relative; /* 絵文字を絶対位置に配置するための親要素 */
+        }
+
+        #tnt {
+            width: 100px;
+            height: 100px;
+            background-color: red;
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            color: white;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+
+        #tnt::before {
+            content: 'TNT';
+            position: absolute;
+        }
+
+        /* 爆発アニメーション */
+        .explosion {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: orange;
+            animation: explode 0.5s ease-out forwards;
+            z-index: -1;
+        }
+
+        @keyframes explode {
+            0% {
+                width: 100px;
+                height: 100px;
+                opacity: 1;
+            }
+            100% {
+                width: 300px;
+                height: 300px;
+                opacity: 0;
+                transform: translate(-100px, -100px);
+            }
+        }
+
+        /* うんこのスタイル */
+        .poop {
+            font-size: 5em; /* 絵文字のサイズを大きく */
+            position: absolute;
+            animation: poop-fall 1s ease forwards;
+            pointer-events: none; /* クリックイベントを無視 */
+        }
+
+        @keyframes poop-fall {
+            0% {
+                transform: translateY(-50px);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="tnt"></div>
+
+<script>
+    const tnt = document.getElementById('tnt');
+
+    tnt.addEventListener('click', function() {
+        // 爆発のエフェクトを作成
+        const explosion = document.createElement('div');
+        explosion.classList.add('explosion');
+        tnt.appendChild(explosion);
+
+        // 💩 を50個表示
+        for (let i = 0; i < 50; i++) {
+            const poop = document.createElement('div');
+            poop.classList.add('poop');
+            poop.textContent = '💩'; // 絵文字を追加
+
+            // ランダムな位置を設定
+            const randomX = Math.random() * window.innerWidth;
+            const randomY = Math.random() * window.innerHeight;
+            poop.style.left = `${randomX}px`;
+            poop.style.top = `${randomY}px`;
+
+            document.body.appendChild(poop);
+        }
+
+        // 一定時間後にTNTを削除（爆発後消える）
+        setTimeout(function() {
+            tnt.style.display = 'none';
+        }, 500); // 爆発アニメーションが完了した後
+    });
+</script>
+
+</body>
+</html>
