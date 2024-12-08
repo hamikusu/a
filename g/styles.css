@@ -1,0 +1,32 @@
+/* styles.css */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+    font-family: Arial, sans-serif;
+    flex-direction: column;
+}
+
+.game-container {
+    text-align: center;
+}
+
+.emoji {
+    font-size: 150px; /* 大きなサイズ */
+    margin: 20px;
+    cursor: pointer; /* カーソルをポインタに */
+}
+
+.hammer {
+    display: none; /* 初期状態では非表示 */
+    font-size: 100px; /* ハンマーのサイズ */
+    margin-top: 20px;
+}
+
+.message {
+    margin-top: 20px;
+    font-size: 20px;
+    color: #e74c3c; /* 赤色 */
+}
