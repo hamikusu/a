@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>石を買うゲーム</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        .stone {
+            display: inline-block;
+            margin: 10px;
+            padding: 20px;
+            background-color: #fff;
+            border: 2px solid #333;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .stone:hover {
+            transform: scale(1.1);
+        }
+        #message {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #333;
+        }
+        .stone-image {
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<h1>石を買うゲーム</h1>
+<div class="stone" onclick="buyStone('ダイヤモンド', 1000)">
+    ダイヤモンド - $1000
+</div>
+<div class="stone" onclick="buyStone('ルビー', 500)">
+    ルビー - $500
+</div>
+<div class="stone" onclick="buyStone('サファイア', 300)">
+    サファイア - $300
+</div>
+<div class="stone" onclick="buyStone('エメラルド', 200)">
+    エメラルド - $200
+</div>
+
+<div id="message"></div>
+
+<img id="stoneImage" class="stone-image" src="" alt="石の画像">
+
+<script>
+    function buyStone(stoneName, price) {
+        const message = `あなたは ${stoneName} を $${price} で購入しました！`;
+        document.getElementById('message').innerText = message;
+
+        // 画像の設定
+        let imageUrl = '';
+        switch(stoneName) {
+            case 'ダイヤモンド':
+                imageUrl = 'https://via.placeholder.com/150/00f/fff?text=Diamond';
+                break;
+            case 'ルビー':
+                imageUrl = 'https://via.placeholder.com/150/f00/fff?text=Ruby';
+                break;
+            case 'サファイア':
+                imageUrl = 'https://via.placeholder.com/150/00f/fff?text=Sapphire';
+                break;
+            case 'エメラルド':
+                imageUrl = 'https://via.placeholder.com/150/0f0/fff?text=Emerald';
+                break;
+        }
+        document.getElementById('stoneImage').src = imageUrl;
+        document.getElementById('stoneImage').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
