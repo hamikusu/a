@@ -1,0 +1,19 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f8ff;
+    font-size: 100px;
+    cursor: pointer;
+}
+#emoji {
+    transition: transform 0.2s;
+}
+#emojis {
+    margin-top: 20px;
+    font-size: 50px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地球温暖化ゲーム</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f8ff;
+            position: relative;
+            font-size: 100px;
+            cursor: pointer;
+        }
+        #emoji {
+            font-size: 200px; /* 🌍のサイズを大きく */
+            position: relative;
+            z-index: 1; /* 🌍を前面に表示 */
+            transition: transform 0.2s;
+        }
+        .overlay {
+            position: absolute; /* 他の絵文字を重ねる */
+            font-size: 50px; /* 他の絵文字のサイズ */
+            transition: opacity 1s; /* フェードアウトのアニメーション */
+            opacity: 1; /* 初期の不透明度 */
+        }
+    </style>
+</head>
+<body>
+    <div id="emoji">🌍</div>
+
+    <script>
+        const emoji = document.getElementById('emoji');
+        const emojis = ['😳', '🔥', '🥵'];
+
+        emoji.addEventListener('click', () => {
+            emoji.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                emoji.style.transform = 'scale(1)';
+            }, 200);
+
+            emojis.forEach((emojiChar) => {
+                const newEmoji = document.createElement('div');
+                newEmoji.textContent = emojiChar;
+                newEmoji.classList.add('overlay');
+
+                // ランダムな位置を設定
+                newEmoji.style.left = `${Math.random() * 100}%`;
+                newEmoji.style.top = `${Math.random() * 100}%`;
+
+                document.body.appendChild(newEmoji);
+
+                // 3秒後にフェードアウト
+                setTimeout(() => {
+                    newEmoji.style.opacity = '0';
+                    setTimeout(() => {
+                        newEmoji.remove(); // 要素を削除
+                    }, 1000); // フェードアウトの後に削除
+                }, 3000);
+            });
+        });
+    </script>
+</body>
+</html>
