@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>インタラクティブ植物図鑑</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: auto;
+        }
+        h1 {
+            color: #333;
+        }
+        .category-list {
+            list-style-type: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+        .category-list li {
+            margin: 10px 0;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .category-list li:hover {
+            background-color: #45a049;
+        }
+        .plant-info {
+            display: none;
+            margin-top: 20px;
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>インタラクティブ植物図鑑</h1>
+        <h3>カテゴリを選んで、植物を調べましょう！</h3>
+        
+        <!-- カテゴリリスト -->
+        <ul class="category-list" id="categoryList">
+            <li onclick="showCategoryInfo('flowers')">花</li>
+            <li onclick="showCategoryInfo('trees')">樹木</li>
+            <li onclick="showCategoryInfo('medicinal')">薬用植物</li>
+            <li onclick="showCategoryInfo('edible')">食用植物</li>
+            <li onclick="showCategoryInfo('tropical')">熱帯植物</li>
+            <li onclick="showCategoryInfo('houseplants')">観葉植物</li>
+        </ul>
+
+        <!-- 各カテゴリの植物詳細情報 -->
+        <div id="flowers" class="plant-info">
+            <h3>花のカテゴリ</h3>
+            <ul>
+                <li><strong>ひまわり (Helianthus annuus)</strong>: 太陽に向かって花が回る植物。</li>
+                <li><strong>バラ (Rosa)</strong>: 美しい花と香りで知られる植物。</li>
+                <li><strong>チューリップ (Tulipa)</strong>: 鮮やかな花が特徴の春の花。</li>
+            </ul>
+        </div>
+        <div id="trees" class="plant-info">
+            <h3>樹木のカテゴリ</h3>
+            <ul>
+                <li><strong>杉 (Cryptomeria japonica)</strong>: 日本の代表的な針葉樹。</li>
+                <li><strong>カエデ (Acer)</strong>: 秋に美しい紅葉を見せる樹木。</li>
+                <li><strong>オーク (Quercus)</strong>: 強靭な木材を持つ樹木。</li>
+            </ul>
+        </div>
+        <div id="medicinal" class="plant-info">
+            <h3>薬用植物</h3>
+            <ul>
+                <li><strong>アロエ (Aloe vera)</strong>: 傷や日焼けの治療に使われる植物。</li>
+                <li><strong>カモミール (Matricaria chamomilla)</strong>: リラックス効果のあるお茶として知られる。</li>
+                <li><strong>ラベンダー (Lavandula)</strong>: 香りの強い花で、リラックス効果がある。</li>
+            </ul>
+        </div>
+        <div id="edible" class="plant-info">
+            <h3>食用植物</h3>
+            <ul>
+                <li><strong>トマト (Solanum lycopersicum)</strong>: 食品として広く利用される果実。</li>
+                <li><strong>キャベツ (Brassica oleracea)</strong>: サラダや料理に使われる野菜。</li>
+                <li><strong>ジャガイモ (Solanum tuberosum)</strong>: 世界中で栽培されている重要な作物。</li>
+            </ul>
+        </div>
+        <div id="tropical" class="plant-info">
+            <h3>熱帯植物</h3>
+            <ul>
+                <li><strong>バナナ (Musa)</strong>: 熱帯地方で栽培される果物。</li>
+                <li><strong>マンゴー (Mangifera indica)</strong>: 甘くてジューシーな果物。</li>
+                <li><strong>パパイヤ (Carica papaya)</strong>: 甘い果肉を持つ熱帯の果物。</li>
+            </ul>
+        </div>
+        <div id="houseplants" class="plant-info">
+            <h3>観葉植物</h3>
+            <ul>
+                <li><strong>モンステラ (Monstera deliciosa)</strong>: 大きな葉が特徴的な室内植物。</li>
+                <li><strong>サボテン (Cactaceae)</strong>: 乾燥に強い植物。</li>
+                <li><strong>アンスリウム (Anthurium)</strong>: 鮮やかな花を持つ室内植物。</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <script>
+        function showCategoryInfo(categoryId) {
+            // すべてのカテゴリ詳細を非表示に
+            const allInfo = document.querySelectorAll('.plant-info');
+            allInfo.forEach(info => info.style.display = 'none');
+
+            // 選択したカテゴリの詳細情報を表示
+            const categoryInfo = document.getElementById(categoryId);
+            categoryInfo.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
