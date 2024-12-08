@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科学クイズゲーム</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        .quiz-container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+        h1 {
+            color: #333;
+        }
+        .question {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+        .option {
+            display: block;
+            margin: 10px auto;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            max-width: 300px;
+        }
+        .option:hover {
+            background-color: #45a049;
+        }
+        .feedback {
+            margin-top: 20px;
+            font-size: 1.1em;
+        }
+        #score {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #007BFF;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1>科学クイズゲーム</h1>
+        <p id="score">スコア: 0</p>
+        <div id="quiz">
+            <p class="question" id="question">質問がここに表示されます</p>
+            <button class="option" onclick="checkAnswer(0)" id="option0">選択肢 1</button>
+            <button class="option" onclick="checkAnswer(1)" id="option1">選択肢 2</button>
+            <button class="option" onclick="checkAnswer(2)" id="option2">選択肢 3</button>
+            <p class="feedback hidden" id="feedback"></p>
+            <button class="hidden" id="nextButton" onclick="nextQuestion()">次の問題へ</button>
+        </div>
+    </div>
+
+    <script>
+        // クイズデータ（100問）
+        const quizQuestions = [
+            { question: "太陽系で最も大きい惑星はどれ？", options: ["地球", "木星", "火星"], answer: 1 },
+            { question: "DNAの正式名称は何？", options: ["デオキシリボ核酸", "リボ核酸", "アデノシン三リン酸"], answer: 0 },
+            { question: "水は何度で氷になる？", options: ["100度", "0度", "-10度"], answer: 1 },
+            { question: "地球の大気の主成分は？", options: ["酸素", "二酸化炭素", "窒素"], answer: 2 },
+            { question: "光が1秒で進む距離は？", options: ["約30万km", "約3万km", "約3000km"], answer: 0 },
+            { question: "酸素は元素記号で何と表される？", options: ["O", "H", "Ox"], answer: 0 },
+            { question: "火星の表面の色は？", options: ["赤", "青", "緑"], answer: 0 },
+            { question: "水の化学式は？", options: ["H2O", "CO2", "O2"], answer: 0 },
+            { question: "宇宙で最も多い元素は？", options: ["酸素", "水素", "ヘリウム"], answer: 1 },
+            { question: "電子の電荷は？", options: ["正", "負", "中性"], answer: 1 },
+            { question: "地球の衛星は何？", options: ["火星", "月", "木星"], answer: 1 },
+            { question: "音速は約何m/s？", options: ["340 m/s", "3000 m/s", "30 m/s"], answer: 0 },
+            { question: "植物が光合成に必要なものは？", options: ["酸素", "窒素", "二酸化炭素"], answer: 2 },
+            { question: "水素の原子番号は？", options: ["1", "2", "3"], answer: 0 },
+            { question: "太陽の表面温度はおよそ何度？", options: ["6000℃", "3000℃", "10000℃"], answer: 0 },
+            // 以下、省略 (前述の100問のリストをここにすべてコピーしてください)
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        // クイズの初期化
+        function loadQuestion() {
+            const questionData = quizQuestions[currentQuestionIndex];
+            document.getElementById('question').textContent = questionData.question;
+            for (let i = 0; i < 3; i++) {
+                document.getElementById('option' + i).textContent = questionData.options[i];
+            }
+            document.getElementById('feedback').classList.add('hidden');
+            document.getElementById('nextButton').classList.add('hidden');
+        }
+
+        // 回答チェック
+        function checkAnswer(selectedOption) {
+            const questionData = quizQuestions[currentQuestionIndex];
+            const feedback = document.getElementById('feedback');
+            if (selectedOption === questionData.answer) {
+                score++;
+                feedback.textContent = "正解です！🎉";
+            } else {
+                feedback.textContent = "不正解です。😢 正しい答えは「" + questionData.options[questionData.answer] + "」です。";
+            }
+            document.getElementById('score').textContent = "スコア: " + score;
+            feedback.classList.remove('hidden');
+            document.getElementById('nextButton').classList.remove('hidden');
+        }
+
+        // 次の問題へ進む
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                document.getElementById('quiz').innerHTML = `<h2>クイズ終了！🎉</h2><p>最終スコア: ${score} / ${quizQuestions.length}</p>`;
+            }
+        }
+
+        // 最初の問題をロード
+        loadQuestion();
+    </script>
+</body>
+</html>
