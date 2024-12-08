@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>野菜切りチャレンジ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f3f3f3;
+            margin: 0;
+            padding: 0;
+        }
+        #game-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        #vegetable {
+            font-size: 100px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        #score, #timer {
+            font-size: 24px;
+            margin: 10px;
+        }
+        #knife {
+            font-size: 60px;
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: top 0.1s;
+        }
+        #vegetable-selection {
+            margin-top: 20px;
+        }
+        .vegetable-option {
+            font-size: 40px;
+            cursor: pointer;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 野菜選択画面 -->
+    <div id="selection-container">
+        <h1>野菜を選んでください</h1>
+        <div id="vegetable-selection"></div>
+        <button onclick="startGame()">スタート</button>
+    </div>
+
+    <!-- ゲーム画面 -->
+    <div id="game-container">
+        <div id="score">スコア: 0</div>
+        <div id="timer">残り時間: 15秒</div>
+        <div id="vegetable">🥒</div>
+        <div id="knife">🔪</div>
+    </div>
+
+    <script>
+        const vegetableSelectionContainer = document.getElementById('selection-container');
+        const gameContainer = document.getElementById('game-container');
+        const vegetableElement = document.getElementById('vegetable');
+        const knife = document.getElementById('knife');
+        const scoreDisplay = document.getElementById('score');
+        const timerDisplay = document.getElementById('timer');
+        const vegetableSelection = document.getElementById('vegetable-selection');
+
+        const vegetables = ["🥑", "🍆", "🥔", "🥕", "🌽", "🥒", "🌶️", "🥦", "🧄", "🥬", "🧅", "🍄", "🥜", "🫘", "🌰", "🫑"];
+        let selectedVegetable = "🥒";
+        let score = 0;
+        let timeLeft = 15;
+        let gameInterval;
+
+        // 野菜選択ボタンを生成
+        vegetables.forEach(veg => {
+            const vegButton = document.createElement('span');
+            vegButton.textContent = veg;
+            vegButton.className = 'vegetable-option';
+            vegButton.onclick = () => selectVegetable(veg);
+            vegetableSelection.appendChild(vegButton);
+        });
+
+        // 野菜を選択
+        function selectVegetable(veg) {
+            selectedVegetable = veg;
+            document.querySelectorAll('.vegetable-option').forEach(el => {
+                el.style.border = '';
+            });
+            event.target.style.border = '2px solid green';
+        }
+
+        // ゲーム開始
+        function startGame() {
+            if (!selectedVegetable) {
+                alert("野菜を選んでください！");
+                return;
+            }
+            vegetableSelectionContainer.style.display = 'none';
+            gameContainer.style.display = 'flex';
+
+            score = 0;
+            timeLeft = 15;
+            scoreDisplay.textContent = `スコア: ${score}`;
+            timerDisplay.textContent = `残り時間: ${timeLeft}秒`;
+            vegetableElement.textContent = selectedVegetable;
+
+            gameInterval = setInterval(updateTimer, 1000);
+        }
+
+        // タイマーの更新
+        function updateTimer() {
+            timeLeft--;
+            timerDisplay.textContent = `残り時間: ${timeLeft}秒`;
+            if (timeLeft <= 0) {
+                endGame();
+            }
+        }
+
+        // ゲーム終了
+        function endGame() {
+            clearInterval(gameInterval);
+            vegetableElement.removeEventListener('click', cutVegetable);
+            alert(`時間切れ！あなたのスコア: ${score}`);
+            location.reload(); // ゲーム終了後にリロード
+        }
+
+        // 野菜を切る
+        vegetableElement.addEventListener('click', cutVegetable);
+
+        function cutVegetable() {
+            if (timeLeft > 0) {
+                score++;
+                scoreDisplay.textContent = `スコア: ${score}`;
+
+                // 包丁のアニメーション
+                knife.style.top = '50px';
+                setTimeout(() => knife.style.top = '-100px', 100);
+
+                // 切ったエフェクト
+                vegetableElement.style.transform = 'scale(0.9)';
+                setTimeout(() => vegetableElement.style.transform = 'scale(1)', 100);
+            }
+        }
+    </script>
+</body>
+</html>
