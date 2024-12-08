@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌿の中から🌷を探せゲーム</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #e0f7fa;
+        }
+        .game-container {
+            position: relative;
+            width: 80%;
+            max-width: 600px;
+            height: 400px;
+            margin: 20px auto;
+            background-color: #c8e6c9;
+            border: 2px solid #4CAF50;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+        .emoji {
+            position: absolute;
+            font-size: 2em;
+            cursor: pointer;
+        }
+        #score, #time {
+            font-size: 1.5em;
+            margin: 10px;
+        }
+        .button {
+            margin: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🌿の中から🌷を探せ！</h1>
+<p id="instructions">隠れた「🌷」をクリックして見つけましょう！</p>
+<p id="score">スコア: 0</p>
+<p id="time">残り時間: 20秒</p>
+<button class="button" onclick="startGame()">ゲームを始める</button>
+
+<div class="game-container" id="gameContainer">
+    <!-- 絵文字が配置される -->
+</div>
+
+<script>
+    let score = 0;
+    let timeLeft = 20;
+    let timer;
+    const leafCount = 30; // 🌿の数
+    let flower;
+
+    function startGame() {
+        score = 0;
+        timeLeft = 20;
+        document.getElementById('score').innerText = 'スコア: ' + score;
+        document.getElementById('time').innerText = '残り時間: ' + timeLeft + '秒';
+        document.getElementById('instructions').innerText = '隠れた「🌷」をクリックして見つけましょう！';
+
+        // コンテナをクリアしてから再配置
+        const container = document.getElementById('gameContainer');
+        container.innerHTML = '';
+
+        // 🌿を配置
+        for (let i = 0; i < leafCount; i++) {
+            const leaf = document.createElement('div');
+            leaf.classList.add('emoji');
+            leaf.textContent = '🌿';
+            leaf.style.top = Math.random() * (container.clientHeight - 40) + 'px';
+            leaf.style.left = Math.random() * (container.clientWidth - 40) + 'px';
+            container.appendChild(leaf);
+        }
+
+        // 🌷を配置
+        addFlower(container);
+
+        // タイマー開始
+        clearInterval(timer);
+        timer = setInterval(updateTime, 1000);
+    }
+
+    function addFlower(container) {
+        flower = document.createElement('div');
+        flower.classList.add('emoji');
+        flower.textContent = '🌷';
+        flower.style.top = Math.random() * (container.clientHeight - 40) + 'px';
+        flower.style.left = Math.random() * (container.clientWidth - 40) + 'px';
+        flower.onclick = () => {
+            score++;
+            document.getElementById('score').innerText = 'スコア: ' + score;
+            flower.remove(); // クリックされた🌷を削除
+            addFlower(container); // 新しい🌷を追加
+        };
+        container.appendChild(flower);
+    }
+
+    function updateTime() {
+        timeLeft--;
+        document.getElementById('time').innerText = '残り時間: ' + timeLeft + '秒';
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            endGame();
+        }
+    }
+
+    function endGame() {
+        document.getElementById('instructions').innerText = 'ゲーム終了！あなたのスコアは ' + score + ' 点です！';
+        const container = document.getElementById('gameContainer');
+        container.innerHTML = ''; // ゲームフィールドをクリア
+    }
+</script>
+
+</body>
+</html>
