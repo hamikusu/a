@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ブラックホール銀河エフェクト</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #000, #02020a, #000000);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #blackhole {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #000000, #222);
+            box-shadow: 0 0 30px 15px rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+        }
+        .star {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: #ffffff;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: orbit linear infinite;
+        }
+        @keyframes orbit {
+            from { transform: rotate(0deg) translateX(var(--distance)); }
+            to { transform: rotate(360deg) translateX(var(--distance)); }
+        }
+    </style>
+</head>
+<body>
+    <div id="blackhole"></div>
+    <script>
+        const blackhole = document.getElementById('blackhole');
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+
+        // 1000個の星を生成
+        for (let i = 0; i < 1000; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+
+            // 各星の軌道半径と速度をランダムに設定
+            const distance = Math.random() * 500 + 50; // ブラックホールからの距離
+            const speed = Math.random() * 10 + 5; // 星が一周する速度
+
+            // カスタムプロパティでアニメーションの距離を設定
+            star.style.setProperty('--distance', `${distance}px`);
+            star.style.animationDuration = `${speed}s`;
+
+            // 星の初期位置をブラックホールの周囲にランダムに設定
+            const angle = Math.random() * 360;
+            star.style.left = `${centerX + Math.cos(angle) * distance}px`;
+            star.style.top = `${centerY + Math.sin(angle) * distance}px`;
+
+            document.body.appendChild(star);
+        }
+    </script>
+</body>
+</html>
