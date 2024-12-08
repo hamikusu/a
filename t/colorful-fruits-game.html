@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>色が変わる果実を探せ！</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f4c3;
+        }
+        .game-container {
+            position: relative;
+            width: 80%;
+            max-width: 600px;
+            height: 400px;
+            margin: 20px auto;
+            background-color: #ffecb3;
+            border: 2px solid #ff9800;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+        .fruit {
+            position: absolute;
+            font-size: 2.5em;
+            cursor: pointer;
+        }
+        #score, #time {
+            font-size: 1.5em;
+            margin: 10px;
+        }
+        .button {
+            margin: 20px;
+            padding: 10px 20px;
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .button:hover {
+            background-color: #e65100;
+        }
+    </style>
+</head>
+<body>
+
+<h1>色が変わる果実を探せ！</h1>
+<p id="instructions">色が変わった果実をクリックしてスコアを稼ぎましょう！</p>
+<p id="score">スコア: 0</p>
+<p id="time">残り時間: 30秒</p>
+<button class="button" onclick="startGame()">ゲームを始める</button>
+
+<div class="game-container" id="gameContainer">
+    <!-- 果物が配置される -->
+</div>
+
+<script>
+    let score = 0;
+    let timeLeft = 30;
+    let timer;
+    const fruitTypes = ['🍎', '🍊', '🍋', '🍇', '🍒'];
+    let changingFruit;
+
+    function startGame() {
+        score = 0;
+        timeLeft = 30;
+        document.getElementById('score').innerText = 'スコア: ' + score;
+        document.getElementById('time').innerText = '残り時間: ' + timeLeft + '秒';
+        document.getElementById('instructions').innerText = '色が変わった果実をクリックしてスコアを稼ぎましょう！';
+
+        const container = document.getElementById('gameContainer');
+        container.innerHTML = '';
+        
+        // 果物を配置
+        for (let i = 0; i < 20; i++) {
+            const fruit = document.createElement('div');
+            fruit.classList.add('fruit');
+            fruit.textContent = fruitTypes[Math.floor(Math.random() * fruitTypes.length)];
+            fruit.style.top = Math.random() * (container.clientHeight - 50) + 'px';
+            fruit.style.left = Math.random() * (container.clientWidth - 50) + 'px';
+            fruit.onclick = () => incorrectClick(fruit);
+            container.appendChild(fruit);
+        }
+
+        // 色が変わる果実をランダムに選択
+        changeFruitColor();
+
+        clearInterval(timer);
+        timer = setInterval(updateTime, 1000);
+    }
+
+    function changeFruitColor() {
+        const fruits = document.querySelectorAll('.fruit');
+        if (changingFruit) changingFruit.style.filter = '';
+        changingFruit = fruits[Math.floor(Math.random() * fruits.length)];
+        changingFruit.style.filter = 'hue-rotate(90deg)';
+        changingFruit.onclick = () => correctClick();
+    }
+
+    function correctClick() {
+        score++;
+        document.getElementById('score').innerText = 'スコア: ' + score;
+        changeFruitColor();
+    }
+
+    function incorrectClick(fruit) {
+        if (fruit !== changingFruit) {
+            score--;
+            document.getElementById('score').innerText = 'スコア: ' + score;
+        }
+    }
+
+    function updateTime() {
+        timeLeft--;
+        document.getElementById('time').innerText = '残り時間: ' + timeLeft + '秒';
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            endGame();
+        }
+    }
+
+    function endGame() {
+        document.getElementById('instructions').innerText = 'ゲーム終了！あなたのスコアは ' + score + ' 点です！';
+        const container = document.getElementById('gameContainer');
+        container.innerHTML = '';
+    }
+</script>
+
+</body>
+</html>
