@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>フルーツキャッチゲーム</title>
+  <style>
+    body { margin: 0; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f0f0; }
+    #gameArea { position: relative; width: 300px; height: 500px; background-color: #e0f7fa; border: 2px solid #00796b; overflow: hidden; }
+    #basket { position: absolute; bottom: 10px; width: 60px; height: 30px; background-color: #ff5722; border-radius: 10px; left: 120px; }
+    #scoreBoard { position: absolute; top: 10px; left: 10px; color: #00796b; font-size: 20px; }
+  </style>
+</head>
+<body>
+  <div id="gameArea">
+    <div id="basket"></div>
+    <div id="scoreBoard">Score: 0 | Level: 1</div>
+  </div>
+
+  <script>
+    const gameArea = document.getElementById('gameArea');
+    const basket = document.getElementById('basket');
+    const scoreBoard = document.getElementById('scoreBoard');
+    let score = 0;
+    let level = 1;
+    let fruitInterval = 1000;
+    let fallSpeed = 5;
+    let gameInterval;
+
+    function updateScoreBoard() {
+      scoreBoard.innerText = `Score: ${score} | Level: ${level}`;
+    }
+
+    function increaseLevel() {
+      if (level < 10) {
+        level++;
+        fruitInterval = Math.max(200, fruitInterval - 100);
+        fallSpeed = Math.min(20, fallSpeed + 1);
+        updateScoreBoard();
+
+        // レベルアップごとに生成速度を変更
+        clearInterval(gameInterval);
+        gameInterval = setInterval(createFruit, fruitInterval);
+      }
+    }
+
+    function createFruit() {
+      const fruit = document.createElement('div');
+      fruit.classList.add('fruit');
+      fruit.innerText = ['🍎', '🍌', '🍇', '🍉'][Math.floor(Math.random() * 4)];
+      fruit.style.left = Math.random() * (gameArea.clientWidth - 30) + 'px';
+      fruit.style.top = '0px';
+      fruit.style.position = 'absolute';
+      fruit.style.fontSize = '30px';
+      gameArea.appendChild(fruit);
+
+      let fallInterval = setInterval(() => {
+        const fruitRect = fruit.getBoundingClientRect();
+        const basketRect = basket.getBoundingClientRect();
+
+        // バスケットがフルーツに触れたかを確認してスコアを加算
+        if (fruitRect.bottom >= basketRect.top &&
+            fruitRect.right >= basketRect.left &&
+            fruitRect.left <= basketRect.right) {
+          score++;
+          fruit.remove();
+          clearInterval(fallInterval);
+          updateScoreBoard();
+
+          // レベルアップ条件：スコアが5ごとに上がる
+          if (score % 5 === 0) {
+            increaseLevel();
+          }
+
+        } else if (fruitRect.top > gameArea.clientHeight) {
+          // フルーツが画面の外に出た場合も削除
+          fruit.remove();
+          clearInterval(fallInterval);
+        } else {
+          // フルーツの落下
+          fruit.style.top = fruit.offsetTop + fallSpeed + 'px';
+        }
+      }, 50);
+    }
+
+    function moveBasket(event) {
+      let newLeft = event.clientX - gameArea.offsetLeft - basket.clientWidth / 2;
+      newLeft = Math.max(0, Math.min(newLeft, gameArea.clientWidth - basket.clientWidth));
+      basket.style.left = newLeft + 'px';
+    }
+
+    function startGame() {
+      gameInterval = setInterval(createFruit, fruitInterval);
+    }
+
+    startGame();
+    gameArea.addEventListener('mousemove', moveBasket);
+  </script>
+</body>
+</html>
