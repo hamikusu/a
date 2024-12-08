@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>クラフトシステム</title>
+    <style>
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 5px;
+        }
+        .grid div {
+            width: 100px;
+            height: 100px;
+            border: 1px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #f0f0f0;
+        }
+        .inventory {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .inventory div {
+            width: 50px;
+            height: 50px;
+            border: 1px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 24px;
+            background-color: #d9d9d9;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 20px;
+        }
+        .dragging {
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>クラフトシステム</h1>
+    
+    <div class="inventory" id="inventory">
+        <div data-item="log" draggable="true">🌳</div> <!-- 原木 -->
+        <div data-item="wood" draggable="true">🪵</div> <!-- 木材 -->
+        <div data-item="stick" draggable="true">🦯</div> <!-- 棒 -->
+    </div>
+    
+    <div class="grid" id="crafting-grid">
+        <div data-slot="0"></div>
+        <div data-slot="1"></div>
+        <div data-slot="2"></div>
+        <div data-slot="3"></div>
+        <div data-slot="4"></div>
+        <div data-slot="5"></div>
+        <div data-slot="6"></div>
+        <div data-slot="7"></div>
+        <div data-slot="8"></div>
+    </div>
+
+    <button onclick="clearGrid()">グリッドをクリア</button>
+
+    <p id="result">作成アイテム: なし</p>
+
+    <script src="script.js"></script>
+</body>
+</html>
