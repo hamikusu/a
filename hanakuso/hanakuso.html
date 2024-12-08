@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生きてる鼻くそ</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            position: relative;
+        }
+
+        #nose {
+            width: 220px;
+            height: 350px;
+            background: linear-gradient(180deg, #f1c27d, #d2a379); /* 肌のグラデーション */
+            border-radius: 60% 60% 50% 50%; /* 鼻の輪郭 */
+            margin: 100px auto;
+            position: relative;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        #nostrils {
+            position: absolute;
+            width: 60%;
+            height: 50px;
+            background-color: transparent;
+            bottom: 10px;
+            left: 20%;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .nostril {
+            width: 45px;
+            height: 100%;
+            background-color: #4a2c12;
+            border-radius: 50%;
+            box-shadow: inset 0 5px 5px rgba(0, 0, 0, 0.2), 0 5px 5px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        #bridge {
+            position: absolute;
+            width: 70px;
+            height: 180px;
+            background: radial-gradient(circle at 50% 30%, #e3a676, #d29b72);
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 50px 50px 30px 30px;
+            box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* うねうねした鼻くそのデザイン */
+        .booger {
+            width: 20px;
+            height: 40px;
+            background-color: #6b8e23;
+            position: absolute;
+            bottom: 5px;
+            left: 10px;
+            border-radius: 50%;
+            transform: rotate(45deg) translate(-50%, -50%);
+            transform-origin: center;
+            animation: wiggle 2s infinite;
+            box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.2), 0 5px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .booger:nth-child(2) {
+            width: 30px;
+            height: 50px;
+            left: 5px;
+            bottom: -5px;
+            background-color: #556b2f;
+            animation-delay: 0.5s;
+        }
+
+        .booger:nth-child(3) {
+            width: 15px;
+            height: 35px;
+            left: 15px;
+            bottom: -10px;
+            background-color: #3b5323;
+            animation-delay: 1s;
+        }
+
+        @keyframes wiggle {
+            0% { transform: rotate(45deg) translate(-50%, -50%); }
+            50% { transform: rotate(50deg) translate(-50%, -50%); }
+            100% { transform: rotate(45deg) translate(-50%, -50%); }
+        }
+
+        #message {
+            font-size: 1.5em;
+            margin-top: 20px;
+        }
+
+        /* 「鼻がおもい〜」のスタイル */
+        #heavy-message {
+            font-size: 2em;
+            color: red;
+            position: absolute;
+            top: 50px;
+            width: 100%;
+            left: 0;
+            animation: heavy-animation 1s infinite;
+        }
+
+        @keyframes heavy-animation {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <h1>リアルな鼻くそを作ろう！</h1>
+    <div id="nose">
+        <div id="bridge"></div> <!-- 鼻筋を表現 -->
+        <div id="nostrils">
+            <div class="nostril">
+                <!-- 左の鼻の穴にうねうね鼻くそを追加 -->
+                <div class="booger"></div>
+                <div class="booger"></div>
+                <div class="booger"></div>
+            </div>
+            <div class="nostril">
+                <!-- 右の鼻の穴にも追加可能 -->
+                <div class="booger"></div>
+                <div class="booger"></div>
+                <div class="booger"></div>
+            </div>
+        </div>
+    </div>
+    <div id="message">クリックして鼻くそをもっと大きくしよう！</div>
+
+    <!-- 「鼻がおもい〜」のメッセージ -->
+    <div id="heavy-message" style="display: none;">鼻がおもい〜！</div>
+
+    <script>
+        // 鼻くそのサイズを大きくする処理
+        document.getElementById('nose').addEventListener('click', function() {
+            const boogers = document.querySelectorAll('.booger');
+            boogers.forEach(function(booger) {
+                let width = parseInt(window.getComputedStyle(booger).width);
+                let height = parseInt(window.getComputedStyle(booger).height);
+                booger.style.width = (width + 10) + 'px';
+                booger.style.height = (height + 10) + 'px';
+            });
+
+            // 鼻くそのサイズが大きくなった時のメッセージ
+            if (parseInt(boogers[0].style.width) > 100) {
+                document.getElementById('message').textContent = '鼻くそが超巨大です！まだまだ大きくなるよ！';
+                document.getElementById('heavy-message').style.display = 'block'; // 「鼻がおもい〜」の表示
+            }
+        });
+    </script>
+</body>
+</html>
