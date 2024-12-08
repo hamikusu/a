@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>動物シルエットの影当てクイズ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f2f2f2;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin-top: 50px;
+        }
+        .shadows-container {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .shadow {
+            font-size: 4em;
+            cursor: pointer;
+            padding: 20px;
+        }
+        .shadow:hover {
+            background-color: #f0f0f0;
+        }
+        .animal-name {
+            margin-top: 20px;
+            font-size: 1.5em;
+        }
+        #score {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+        .button {
+            margin-top: 30px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>動物シルエットの影当てクイズ</h1>
+    <div id="score">スコア: 0</div>
+    <div class="shadows-container" id="shadowsContainer">
+        <!-- 動物のシルエットの影がここに表示される -->
+    </div>
+    <div class="animal-name" id="animalName">動物の名前</div>
+    <button class="button" onclick="nextQuestion()">次の問題</button>
+</div>
+
+<script>
+    let score = 0;
+    const animals = [
+        { name: "ライオン", emoji: "🦁" },
+        { name: "ゾウ", emoji: "🐘" },
+        { name: "キリン", emoji: "🦒" },
+        { name: "ウサギ", emoji: "🐰" },
+        { name: "クマ", emoji: "🐻" }
+    ];
+    let currentAnimalIndex = 0;
+
+    function nextQuestion() {
+        // シャッフルしてシルエットを表示
+        const animal = animals[currentAnimalIndex];
+        document.getElementById('animalName').innerText = animal.name;
+        document.getElementById('shadowsContainer').innerHTML = '';
+
+        const correctShadowIndex = Math.floor(Math.random() * 3); // 3つのうち1つが正解
+        const shadows = [];
+
+        // 影を作成
+        for (let i = 0; i < 3; i++) {
+            const shadow = document.createElement('div');
+            shadow.classList.add('shadow');
+            if (i === correctShadowIndex) {
+                // 正解の影
+                shadow.innerText = animal.emoji;
+                shadow.onclick = () => {
+                    score++;
+                    document.getElementById('score').innerText = `スコア: ${score}`;
+                    nextQuestion(); // 次の問題に進む
+                };
+            } else {
+                // 間違いの影
+                const randomAnimal = animals[Math.floor(Math.random() * animals.length)];
+                shadow.innerText = randomAnimal.emoji;
+                shadow.onclick = () => {
+                    alert("間違いです！再試行してください。");
+                };
+            }
+            shadows.push(shadow);
+        }
+
+        // シャッフルして配置
+        shadows.sort(() => Math.random() - 0.5); // シャッフル
+        shadows.forEach(shadow => {
+            document.getElementById('shadowsContainer').appendChild(shadow);
+        });
+
+        currentAnimalIndex = (currentAnimalIndex + 1) % animals.length;
+    }
+
+    // ゲーム開始
+    nextQuestion();
+</script>
+
+</body>
+</html>
