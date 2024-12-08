@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>モグラ叩きゲーム</title>
+  <style>
+    body { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: Arial, sans-serif; background-color: #f0f0f0; }
+    h1 { margin-bottom: 10px; }
+    #score, #level { font-size: 20px; color: #333; margin-bottom: 10px; }
+    #gameBoard { display: grid; grid-template-columns: repeat(3, 100px); gap: 10px; }
+    .hole { width: 100px; height: 100px; background-color: #8B4513; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; color: transparent; cursor: pointer; }
+    .mole { color: #000; } /* モグラが出現中のスタイル */
+  </style>
+</head>
+<body>
+  <h1>モグラ叩きゲーム</h1>
+  <div id="score">スコア: 0</div>
+  <div id="level">レベル: 1</div>
+  <div id="gameBoard">
+    <div class="hole" data-id="1"></div>
+    <div class="hole" data-id="2"></div>
+    <div class="hole" data-id="3"></div>
+    <div class="hole" data-id="4"></div>
+    <div class="hole" data-id="5"></div>
+    <div class="hole" data-id="6"></div>
+    <div class="hole" data-id="7"></div>
+    <div class="hole" data-id="8"></div>
+    <div class="hole" data-id="9"></div>
+  </div>
+
+  <script>
+    const scoreDisplay = document.getElementById('score');
+    const levelDisplay = document.getElementById('level');
+    const holes = document.querySelectorAll('.hole');
+    let score = 0;
+    let level = 1;
+    let moleInterval = 1000;  // 初期速度 (1000ms = 1秒)
+    let moleTimeout;
+
+    function showMole() {
+      holes.forEach(hole => hole.classList.remove('mole')); // 全ての穴からモグラを引っ込める
+      const randomHole = holes[Math.floor(Math.random() * holes.length)]; // ランダムに穴を選ぶ
+      randomHole.classList.add('mole'); // 選ばれた穴にモグラを出現させる
+      randomHole.innerText = '🐹'; // モグラの絵文字
+
+      // クリックしたときにスコアを増加
+      randomHole.onclick = function() {
+        if (randomHole.classList.contains('mole')) {
+          score++;
+          scoreDisplay.innerText = `スコア: ${score}`;
+          randomHole.classList.remove('mole'); // モグラを消す
+          randomHole.innerText = ''; // 絵文字を消す
+
+          // レベルアップ処理
+          if (score % 30 === 0) {
+            level++;
+            levelDisplay.innerText = `レベル: ${level}`;
+            moleInterval *= 0.8; // モグラ出現速度をさらに速く
+          }
+        }
+      };
+
+      // モグラ出現を再スケジュール
+      moleTimeout = setTimeout(showMole, moleInterval);
+    }
+
+    function startGame() {
+      score = 0;
+      level = 1;
+      scoreDisplay.innerText = `スコア: ${score}`;
+      levelDisplay.innerText = `レベル: ${level}`;
+      moleInterval = 1000; // 初期速度にリセット
+      showMole(); // ゲーム開始
+    }
+
+    startGame();
+  </script>
+</body>
+</html>
