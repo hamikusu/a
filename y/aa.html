@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ハンコ作成＆スタンプゲーム</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>ハンコ作成＆スタンプ押しゲーム</h1>
+  
+  <!-- ハンコ作成画面 -->
+  <div id="design-section">
+    <h2>ハンコをデザインしよう</h2>
+    <canvas id="designCanvas" width="300" height="300"></canvas>
+    <div>
+      <button id="clearCanvas">クリア</button>
+      <button id="saveHanko">ハンコ保存</button>
+    </div>
+  </div>
+  
+  <!-- ハンコ押し画面 -->
+  <div id="stamp-section" style="display: none;">
+    <h2>ハンコを押そう</h2>
+    <canvas id="stampCanvas" width="600" height="400"></canvas>
+    <div>
+      <button id="backToDesign">戻る</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
