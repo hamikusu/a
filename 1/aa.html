@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>時間を操るアクションゲーム</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #20232a;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        #game-container {
+            position: relative;
+        }
+        canvas {
+            display: block;
+            background-color: #282c34;
+            border: 2px solid #61dafb;
+        }
+        #controls {
+            margin-top: 10px;
+        }
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            border: none;
+            background-color: #61dafb;
+            color: black;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #21a1f1;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="gameCanvas" width="600" height="400"></canvas>
+        <div id="controls">
+            <button id="pause">時間停止</button>
+            <button id="slow">スロー</button>
+            <button id="fast">早送り</button>
+            <button id="normal">通常</button>
+        </div>
+    </div>
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        // ゲームの基本設定
+        let player = {
+            x: canvas.width / 2 - 10, // キャンバスの横幅の中央
+            y: canvas.height - 50,   // キャンバスの下部から少し上
+            width: 20,
+            height: 20,
+            color: "#61dafb",
+            speed: 3
+        };
+        let obstacles = [];
+        let gameSpeed = 1; // 時間の進み具合
+        let isPaused = false;
+
+        // 障害物生成
+        function createObstacle() {
+            const height = Math.random() * 100 + 20;
+            obstacles.push({
+                x: canvas.width,
+                y: canvas.height - height,
+                width: 20,
+                height: height,
+                color: "#ff5555"
+            });
+        }
+
+        // プレイヤー描画
+        function drawPlayer() {
+            ctx.fillStyle = player.color;
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+        }
+
+        // 障害物描画
+        function drawObstacles() {
+            ctx.fillStyle = "#ff5555";
+            obstacles.forEach(obstacle => {
+                ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+            });
+        }
+
+        // 障害物の移動
+        function moveObstacles() {
+            obstacles.forEach(obstacle => {
+                obstacle.x -= 2 * gameSpeed;
+            });
+            obstacles = obstacles.filter(obstacle => obstacle.x + obstacle.width > 0);
+        }
+
+        // 衝突判定
+        function checkCollision() {
+            obstacles.forEach(obstacle => {
+                if (
+                    player.x < obstacle.x + obstacle.width &&
+                    player.x + player.width > obstacle.x &&
+                    player.y < obstacle.y + obstacle.height &&
+                    player.y + player.height > obstacle.y
+                ) {
+                    alert("ゲームオーバー！");
+                    resetGame();
+                }
+            });
+        }
+
+        // ゲームのリセット
+        function resetGame() {
+            player.x = canvas.width / 2 - 10;
+            player.y = canvas.height - 50;
+            obstacles = [];
+            gameSpeed = 1;
+        }
+
+        // ゲームループ
+        function gameLoop() {
+            if (!isPaused) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // 描画と更新
+                drawPlayer();
+                drawObstacles();
+                moveObstacles();
+                checkCollision();
+
+                // 障害物の生成（ランダム）
+                if (Math.random() < 0.01) {
+                    createObstacle();
+                }
+            }
+            requestAnimationFrame(gameLoop);
+        }
+
+        // キーボード操作
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "ArrowLeft") player.x -= player.speed * gameSpeed; // 左移動
+            if (event.key === "ArrowRight") player.x += player.speed * gameSpeed; // 右移動
+            if (event.key === "ArrowUp") player.y -= player.speed * gameSpeed; // 上移動
+            if (event.key === "ArrowDown") player.y += player.speed * gameSpeed; // 下移動
+
+            // プレイヤーがキャンバス外に出ないよう制限
+            player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
+            player.y = Math.max(0, Math.min(canvas.height - player.height, player.y));
+        });
+
+        // ボタン操作
+        document.getElementById("pause").addEventListener("click", () => {
+            isPaused = !isPaused;
+        });
+        document.getElementById("slow").addEventListener("click", () => {
+            gameSpeed = 0.5;
+        });
+        document.getElementById("fast").addEventListener("click", () => {
+            gameSpeed = 2;
+        });
+        document.getElementById("normal").addEventListener("click", () => {
+            gameSpeed = 1;
+        });
+
+        // ゲーム開始
+        gameLoop();
+    </script>
+</body>
+</html>
