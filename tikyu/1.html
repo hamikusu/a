@@ -3,15 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>地球破壊ゲーム</title>
-    <link rel="stylesheet" href="style.css">
+    <title>太陽系ビューア</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #000;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            margin-top: 20px;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            height: 80vh;
+            overflow: hidden;
+            border: 2px solid white;
+        }
+
+        .planet {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background-size: cover;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        #description {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+    </style>
 </head>
 <body>
-    <div class="game-container">
-        <h1>地球破壊ゲーム</h1>
-        <img id="earth" src="earth.png" alt="地球">
-        <button id="destroy-button">破壊する</button>
-    </div>
-    <script src="script.js"></script>
+    <h1>太陽系ビューア</h1>
+    <p>太陽系の惑星を探索しましょう！</p>
+    <div id="game-container"></div>
+    <div id="description">惑星をクリックして説明を表示します。</div>
+
+    <script>
+        const gameContainer = document.getElementById('game-container');
+        const descriptionDiv = document.getElementById('description');
+
+        const planets = [
+            { 
+                name: '水星', 
+                image: 'https://upload.wikimedia.org/wikipedia/commons/4/4a/Mercury_in_true_color.jpg', 
+                description: '水星は太陽系で最も内側に位置する惑星で、最小の惑星です。' 
+            },
+            { 
+                name: '金星', 
+                image: 'https://upload.wikimedia.org/wikipedia/commons/e/e5/Venus-real_color.jpg', 
+                description: '金星は太陽系で2番目に近い惑星で、「明けの明星」として知られています。' 
+            },
+            { 
+                name: '地球', 
+                image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Earth_Eastern_Hemisphere.jpg/240px-Earth_Eastern_Hemisphere.jpg', 
+                description: '地球は生命が存在する唯一の惑星で、太陽系で3番目の惑星です。' 
+            },
+            { 
+                name: '火星', 
+                image: 'https://upload.wikimedia.org/wikipedia/commons/0/02/OSIRIS_Mars_true_color.jpg', 
+                description: '火星は「赤い惑星」として知られ、地球に最も似ているとされています。' 
+            },
+            { 
+                name: '木星', 
+                image: 'https://upload.wikimedia.org/wikipedia/commons/e/e2/Jupiter.jpg', 
+                description: '木星は太陽系で最大の惑星で、有名な大赤斑を持っています。' 
+            },
+            { 
+                name: '土星', 
+                image: 'https://upload.wikimedia.org/wikipedia/commons/c/c7/Saturn_during_Equinox.jpg', 
+                description: '土星はその美しい環で知られる、太陽系で2番目に大きな惑星です。' 
+            },
+            { 
+                name: '天王星', 
+                image: 'https://upload.wikimedia.org/wikipedia/commons/3/3d/Uranus2.jpg', 
+                description: '天王星は横倒しに自転している珍しい惑星です。' 
+            },
+            { 
+                name: '海王星', 
+                image: 'https://upload.wikimedia.org/wikipedia/commons/5/56/Neptune_Full.jpg', 
+                description: '海王星は太陽系で最も外側に位置する惑星で、強い風が吹いています。' 
+            }
+        ];
+
+        const placedPositions = [];
+
+        function isOverlapping(x, y) {
+            return placedPositions.some(pos => {
+                const dx = pos.x - x;
+                const dy = pos.y - y;
+                return Math.sqrt(dx * dx + dy * dy) < 100; // 距離が100px未満の場合重なりとみなす
+            });
+        }
+
+        function createPlanet(planet) {
+            const planetDiv = document.createElement('div');
+            planetDiv.classList.add('planet');
+            planetDiv.style.backgroundImage = `url('${planet.image}')`;
+
+            let x, y;
+
+            do {
+                x = Math.random() * (gameContainer.clientWidth - 80);
+                y = Math.random() * (gameContainer.clientHeight - 80);
+            } while (isOverlapping(x, y));
+
+            placedPositions.push({ x, y });
+
+            planetDiv.style.left = `${x}px`;
+            planetDiv.style.top = `${y}px`;
+
+            planetDiv.title = planet.name;
+            planetDiv.addEventListener('click', () => {
+                descriptionDiv.textContent = `${planet.name}: ${planet.description}`;
+            });
+
+            gameContainer.appendChild(planetDiv);
+        }
+
+        // 惑星をすべて生成
+        planets.forEach(createPlanet);
+    </script>
 </body>
 </html>
