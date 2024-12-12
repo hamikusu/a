@@ -6,20 +6,109 @@
     <title>環境パズルゲーム</title>
     <style>
         body {
+            font-family: Arial, sans-serif;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            margin: 0;
+            justify-content: center;
             height: 100vh;
-            background-color: #eef2f3;
+            margin: 0;
+            background-color: #f0f8ff;
         }
-        canvas {
-            border: 2px solid black;
+        .game-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .trash {
+            width: 100px;
+            height: 100px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #333;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .bin {
+            width: 120px;
+            height: 120px;
+            border: 3px dashed #666;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #e0e0e0;
+        }
+        .bin.correct {
+            border-color: green;
+        }
+        #score {
+            font-size: 20px;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
-    <script src="game.js"></script>
+    <h1>ゴミを正しいゴミ箱へ！</h1>
+    <div id="score">スコア: 0</div>
+    <div class="game-container">
+        <div id="trash1" class="trash" draggable="true">ペットボトル</div>
+        <div id="trash2" class="trash" draggable="true">紙</div>
+        <div id="trash3" class="trash" draggable="true">缶</div>
+    </div>
+    <div class="game-container">
+        <div id="bin1" class="bin">リサイクル</div>
+        <div id="bin2" class="bin">可燃ゴミ</div>
+        <div id="bin3" class="bin">金属</div>
+    </div>
+    <script>
+        let score = 0;
+
+        // ゴミとゴミ箱の対応
+        const correctBins = {
+            trash1: "bin1", // ペットボトル -> リサイクル
+            trash2: "bin2", // 紙 -> 可燃ゴミ
+            trash3: "bin3", // 缶 -> 金属
+        };
+
+        // ゴミをドラッグできるようにする
+        document.querySelectorAll(".trash").forEach(trash => {
+            trash.addEventListener("dragstart", e => {
+                e.dataTransfer.setData("text/plain", e.target.id);
+            });
+        });
+
+        // ゴミ箱のイベントを設定
+        document.querySelectorAll(".bin").forEach(bin => {
+            bin.addEventListener("dragover", e => {
+                e.preventDefault();
+            });
+
+            bin.addEventListener("drop", e => {
+                e.preventDefault();
+                const trashId = e.dataTransfer.getData("text/plain");
+                if (correctBins[trashId] === e.target.id) {
+                    e.target.classList.add("correct");
+                    document.getElementById(trashId).remove(); // ゴミを削除
+                    score++;
+                    updateScore();
+                } else {
+                    alert("間違ったゴミ箱です！");
+                }
+            });
+        });
+
+        // スコアを更新する関数
+        function updateScore() {
+            document.getElementById("score").textContent = `スコア: ${score}`;
+            if (score === Object.keys(correctBins).length) {
+                alert("すべて正しく分類しました！おめでとうございます！");
+            }
+        }
+    </script>
 </body>
 </html>
