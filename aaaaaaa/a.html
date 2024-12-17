@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>探し物ゲーム</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f0f8ff;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    h1 {
+      margin: 10px;
+    }
+
+    #game-container {
+      position: relative;
+      width: 80vw;
+      height: 80vh;
+      margin: 0 auto;
+      background-color: #e0f7fa;
+      border: 2px solid #333;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .item {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+    }
+
+    #score, #timer {
+      font-size: 20px;
+      margin: 10px;
+      color: #333;
+    }
+
+    #game-over {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      font-size: 24px;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>探し物ゲーム</h1>
+  <div id="score">見つけたアイテム: 0</div>
+  <div id="timer">残り時間: 30秒</div>
+  <div id="game-container"></div>
+  <div id="game-over">
+    <p id="game-result"></p>
+    <button onclick="startGame()">もう一度プレイ</button>
+  </div>
+
+  <script>
+    const gameContainer = document.getElementById("game-container");
+    const scoreDisplay = document.getElementById("score");
+    const timerDisplay = document.getElementById("timer");
+    const gameOverScreen = document.getElementById("game-over");
+    const gameResult = document.getElementById("game-result");
+
+    const itemCount = 10; // 見つけるアイテムの数
+    const gameTime = 30; // ゲーム時間（秒）
+    let items = [];
+    let score = 0;
+    let timer;
+
+    // アイテム画像URLのリスト
+    const itemImages = [
+      "🍎", "🍌", "🍒", "🍇", "🍓", "🍉", "🥕", "🌽", "🥝", "🥥"
+    ];
+
+    // ゲーム初期化
+    function startGame() {
+      score = 0;
+      scoreDisplay.textContent = "見つけたアイテム: 0";
+      gameContainer.innerHTML = "";
+      gameOverScreen.style.display = "none";
+      items = [];
+
+      // アイテムを生成して配置
+      for (let i = 0; i < itemCount; i++) {
+        const item = document.createElement("div");
+        item.classList.add("item");
+        item.textContent = itemImages[Math.floor(Math.random() * itemImages.length)];
+        item.style.left = Math.random() * (gameContainer.offsetWidth - 30) + "px";
+        item.style.top = Math.random() * (gameContainer.offsetHeight - 30) + "px";
+        item.addEventListener("click", () => collectItem(item));
+        gameContainer.appendChild(item);
+        items.push(item);
+      }
+
+      // タイマー開始
+      let timeLeft = gameTime;
+      timerDisplay.textContent = `残り時間: ${timeLeft}秒`;
+      timer = setInterval(() => {
+        timeLeft--;
+        timerDisplay.textContent = `残り時間: ${timeLeft}秒`;
+        if (timeLeft <= 0) endGame();
+      }, 1000);
+    }
+
+    // アイテムをクリックしたときの処理
+    function collectItem(item) {
+      if (item.parentElement) {
+        item.parentElement.removeChild(item);
+        score++;
+        scoreDisplay.textContent = `見つけたアイテム: ${score}`;
+      }
+    }
+
+    // ゲーム終了処理
+    function endGame() {
+      clearInterval(timer);
+      gameOverScreen.style.display = "block";
+      if (score >= itemCount) {
+        gameResult.textContent = `おめでとう！すべてのアイテムを見つけました！`;
+      } else {
+        gameResult.textContent = `ゲームオーバー！ ${score} / ${itemCount} 個のアイテムを見つけました。`;
+      }
+    }
+
+    startGame();
+  </script>
+</body>
+</html>
