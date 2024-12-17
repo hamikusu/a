@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>自分で星座を作るゲーム</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: black;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    canvas {
+      display: block;
+      cursor: crosshair;
+    }
+
+    #controls {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 5px 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    input {
+      padding: 5px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="controls">
+    <div>星をクリックして星座を作ろう！</div>
+    <button id="reset">リセット</button>
+    <div>
+      星座名: <input type="text" id="constellationName" placeholder="星座名を入力">
+      <button id="save">保存</button>
+    </div>
+  </div>
+  <canvas id="canvas"></canvas>
+
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const stars = []; // 星の座標を格納する配列
+
+    // 星を追加する関数
+    function addStar(x, y) {
+      stars.push({ x, y });
+      drawStars();
+    }
+
+    // 星と線を描画する関数
+    function drawStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // 背景の星（ランダムな小さい星を表示）
+      for (let i = 0; i < 200; i++) {
+        ctx.beginPath();
+        ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, Math.random() * 2, 0, Math.PI * 2);
+        ctx.fillStyle = "white";
+        ctx.fill();
+      }
+
+      // ユーザーが追加した星を描画
+      ctx.fillStyle = "yellow";
+      stars.forEach((star) => {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, 5, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // 星を線でつなぐ
+      if (stars.length > 1) {
+        ctx.strokeStyle = "cyan";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(stars[0].x, stars[0].y);
+        for (let i = 1; i < stars.length; i++) {
+          ctx.lineTo(stars[i].x, stars[i].y);
+        }
+        ctx.stroke();
+      }
+    }
+
+    // キャンバスクリックイベント
+    canvas.addEventListener("click", (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      addStar(x, y);
+    });
+
+    // リセットボタン
+    document.getElementById("reset").addEventListener("click", () => {
+      stars.length = 0; // 星座データをクリア
+      drawStars();
+    });
+
+    // 保存ボタン
+    document.getElementById("save").addEventListener("click", () => {
+      const name = document.getElementById("constellationName").value || "名前なし";
+      alert(`星座「${name}」が保存されました！`);
+    });
+
+    // 初期背景描画
+    drawStars();
+
+    // ウィンドウリサイズ対応
+    window.addEventListener("resize", () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      drawStars();
+    });
+  </script>
+</body>
+</html>
