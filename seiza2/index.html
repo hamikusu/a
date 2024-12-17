@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>星のゲーム</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: black;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    #game-info {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 18px;
+      color: yellow;
+    }
+
+    #game-over {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 0, 0.8);
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      color: white;
+      font-size: 24px;
+    }
+
+    #restart {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-info">スコア: <span id="score">0</span> | 残り時間: <span id="time">30</span> 秒</div>
+  <div id="game-over">
+    <p>ゲーム終了！</p>
+    <p>あなたのスコア: <span id="final-score">0</span></p>
+    <button id="restart">もう一度プレイ</button>
+  </div>
+  <canvas id="gameCanvas"></canvas>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const scoreDisplay = document.getElementById("score");
+    const timeDisplay = document.getElementById("time");
+    const gameOverScreen = document.getElementById("game-over");
+    const finalScoreDisplay = document.getElementById("final-score");
+    const restartButton = document.getElementById("restart");
+
+    let score = 0;
+    let timeLeft = 30;
+    let stars = [];
+    let gameInterval;
+    let timerInterval;
+
+    // 星オブジェクトを生成
+    function createStar() {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height;
+      const size = Math.random() * 3 + 2; // 星の大きさ
+      const speed = Math.random() * 2 + 1; // 流れる速さ
+      stars.push({ x, y, size, speed });
+    }
+
+    // 流れ星を描画
+    function drawStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "white";
+
+      stars.forEach((star, index) => {
+        star.x += star.speed; // 横に流れる動き
+        star.y += star.speed / 2; // 少し下にも流れる
+
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 画面外に出た星は削除
+        if (star.x > canvas.width || star.y > canvas.height) {
+          stars.splice(index, 1);
+        }
+      });
+    }
+
+    // 星をクリックしたらスコアを加算
+    canvas.addEventListener("click", (e) => {
+      const mouseX = e.clientX;
+      const mouseY = e.clientY;
+
+      stars.forEach((star, index) => {
+        const distance = Math.hypot(mouseX - star.x, mouseY - star.y);
+        if (distance < star.size + 5) {
+          stars.splice(index, 1); // クリックされた星を削除
+          score += 10; // スコア加算
+          scoreDisplay.textContent = score;
+        }
+      });
+    });
+
+    // タイマー管理
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        timeDisplay.textContent = timeLeft;
+
+        if (timeLeft <= 0) {
+          endGame();
+        }
+      }, 1000);
+    }
+
+    // ゲーム終了
+    function endGame() {
+      clearInterval(gameInterval);
+      clearInterval(timerInterval);
+      gameOverScreen.style.display = "block";
+      finalScoreDisplay.textContent = score;
+    }
+
+    // ゲームリスタート
+    restartButton.addEventListener("click", () => {
+      score = 0;
+      timeLeft = 30;
+      stars = [];
+      scoreDisplay.textContent = score;
+      timeDisplay.textContent = timeLeft;
+      gameOverScreen.style.display = "none";
+      startGame();
+    });
+
+    // ゲーム開始
+    function startGame() {
+      gameInterval = setInterval(() => {
+        createStar();
+        drawStars();
+      }, 50);
+      startTimer();
+    }
+
+    startGame();
+  </script>
+</body>
+</html>
