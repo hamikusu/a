@@ -3,142 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>重力反転アクション</title>
+    <title>重力反転アクションゲーム</title>
     <style>
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #282c34;
-            color: white;
             font-family: Arial, sans-serif;
+            margin: 0;
+            overflow: hidden;
+            background-color: #87ceeb;
         }
         canvas {
-            border: 2px solid white;
-            background-color: black;
+            display: block;
+            margin: 0 auto;
+            background: #333;
+        }
+        .instructions {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 18px;
         }
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas" width="600" height="400"></canvas>
+    <div class="instructions">スペースキーで重力を反転！</div>
+    <canvas id="gameCanvas"></canvas>
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
 
-        // ゲームの基本設定
-        const canvasWidth = canvas.width;
-        const canvasHeight = canvas.height;
+        // キャンバスサイズ
+        canvas.width = 800;
+        canvas.height = 600;
 
-        let gravity = 1; // 重力方向（1: 下, -1: 上）
-        let isGameOver = false;
-        let obstacles = [];
-        let frame = 0;
-
-        // プレイヤーの設定
+        // プレイヤー
         const player = {
             x: 50,
-            y: canvasHeight / 2,
-            width: 20,
-            height: 20,
-            speed: 0
+            y: canvas.height / 2,
+            width: 30,
+            height: 30,
+            color: "red",
+            gravity: 2,
+            jumpPower: -2,
+            velocityY: 0,
+            isReversed: false
         };
 
-        // 障害物の設定
-        const obstacleWidth = 40;
-        const obstacleGap = 150;
+        // 地面と天井
+        const groundHeight = 20;
+        const ground = {
+            y: canvas.height - groundHeight,
+            height: groundHeight,
+            color: "green"
+        };
+        const ceiling = {
+            y: 0,
+            height: groundHeight,
+            color: "green"
+        };
 
-        // 障害物を生成する
+        // 障害物
+        const obstacles = [];
+        const obstacleWidth = 20;
+        const obstacleGap = 200;
+
+        let gameOver = false;
+        let frameCount = 0;
+
+        // 障害物生成
         function createObstacle() {
-            const minHeight = 50;
-            const maxHeight = canvasHeight - obstacleGap - minHeight;
-            const height = Math.floor(Math.random() * (maxHeight - minHeight) + minHeight);
-
+            const obstacleHeight = Math.random() * (canvas.height / 2);
             obstacles.push({
-                x: canvasWidth,
-                topHeight: height,
-                bottomY: height + obstacleGap
+                x: canvas.width,
+                width: obstacleWidth,
+                topHeight: obstacleHeight,
+                bottomHeight: canvas.height - obstacleHeight - obstacleGap
             });
         }
 
-        // 障害物を描画
-        function drawObstacles() {
-            ctx.fillStyle = 'red';
-            obstacles.forEach(obstacle => {
-                ctx.fillRect(obstacle.x, 0, obstacleWidth, obstacle.topHeight); // 上の障害物
-                ctx.fillRect(obstacle.x, obstacle.bottomY, obstacleWidth, canvasHeight - obstacle.bottomY); // 下の障害物
-            });
-        }
+        // ゲームループ
+        function gameLoop() {
+            if (gameOver) return;
 
-        // プレイヤーを描画
-        function drawPlayer() {
-            ctx.fillStyle = 'white';
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 背景描画
+            ctx.fillStyle = ground.color;
+            ctx.fillRect(0, ground.y, canvas.width, ground.height);
+            ctx.fillRect(0, ceiling.y, canvas.width, ceiling.height);
+
+            // プレイヤーの物理計算
+            player.velocityY += player.isReversed ? -player.gravity : player.gravity;
+            player.y += player.velocityY;
+
+            // プレイヤーの壁との衝突
+            if (player.y + player.height > ground.y) {
+                player.y = ground.y - player.height;
+                player.velocityY = 0;
+            } else if (player.y < ceiling.height) {
+                player.y = ceiling.height;
+                player.velocityY = 0;
+            }
+
+            // プレイヤー描画
+            ctx.fillStyle = player.color;
             ctx.fillRect(player.x, player.y, player.width, player.height);
-        }
 
-        // 重力反転
-        document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') {
-                gravity *= -1;
-            }
-        });
+            // 障害物の移動と描画
+            obstacles.forEach((obstacle, index) => {
+                obstacle.x -= 5; // 障害物のスピード
 
-        // ゲームオーバーチェック
-        function checkCollision() {
-            if (player.y <= 0 || player.y + player.height >= canvasHeight) {
-                isGameOver = true;
-            }
+                // 障害物描画
+                ctx.fillStyle = "blue";
+                ctx.fillRect(obstacle.x, 0, obstacle.width, obstacle.topHeight);
+                ctx.fillRect(obstacle.x, canvas.height - obstacle.bottomHeight, obstacle.width, obstacle.bottomHeight);
 
-            obstacles.forEach(obstacle => {
+                // 障害物が画面外に出たら削除
+                if (obstacle.x + obstacle.width < 0) {
+                    obstacles.splice(index, 1);
+                }
+
+                // 衝突判定
                 if (
-                    player.x < obstacle.x + obstacleWidth &&
+                    player.x < obstacle.x + obstacle.width &&
                     player.x + player.width > obstacle.x &&
-                    (player.y < obstacle.topHeight || player.y + player.height > obstacle.bottomY)
+                    (player.y < obstacle.topHeight || player.y + player.height > canvas.height - obstacle.bottomHeight)
                 ) {
-                    isGameOver = true;
+                    gameOver = true;
+                    alert("ゲームオーバー！リロードして再挑戦！");
                 }
             });
-        }
 
-        // メインゲームループ
-        function gameLoop() {
-            if (isGameOver) {
-                ctx.font = '30px Arial';
-                ctx.fillStyle = 'white';
-                ctx.fillText('Game Over', canvasWidth / 2 - 80, canvasHeight / 2);
-                return;
-            }
-
-            // 背景をクリア
-            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-
-            // プレイヤーの動き
-            player.speed += gravity * 0.5;
-            player.y += player.speed;
-
-            // 障害物の動き
-            if (frame % 120 === 0) {
+            // 障害物生成
+            if (frameCount % 120 === 0) {
                 createObstacle();
             }
-            obstacles.forEach(obstacle => obstacle.x -= 2);
 
-            // 障害物を削除
-            obstacles = obstacles.filter(obstacle => obstacle.x + obstacleWidth > 0);
-
-            // 描画
-            drawPlayer();
-            drawObstacles();
-
-            // 衝突判定
-            checkCollision();
-
-            // 次のフレーム
-            frame++;
+            frameCount++;
             requestAnimationFrame(gameLoop);
         }
 
-        // ゲーム開始
+        // 重力反転
+        document.addEventListener("keydown", (e) => {
+            if (e.code === "Space") {
+                player.isReversed = !player.isReversed;
+            }
+        });
+
+        // ゲームスタート
         gameLoop();
     </script>
 </body>
