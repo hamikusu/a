@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>大量の星を吸い込むブラックホール</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: black;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    #score {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 18px;
+      color: yellow;
+    }
+
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div id="score">スコア: <span id="scoreValue">0</span></div>
+  <canvas id="gameCanvas"></canvas>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let score = 0;
+    let blackHole = { x: canvas.width / 2, y: canvas.height / 2, radius: 30 };
+    const stars = [];
+    const starCount = 5000; // 星の数を大幅に増やす
+
+    // 星をランダムに生成
+    function createStars() {
+      for (let i = 0; i < starCount; i++) {
+        stars.push({
+          x: Math.random() * canvas.width * 2 - canvas.width / 2,
+          y: Math.random() * canvas.height * 2 - canvas.height / 2,
+          size: Math.random() * 1.5 + 0.5,
+          velocityX: 0,
+          velocityY: 0
+        });
+      }
+    }
+
+    // ブラックホールを描画
+    function drawBlackHole() {
+      ctx.beginPath();
+      const gradient = ctx.createRadialGradient(
+        blackHole.x, blackHole.y, blackHole.radius / 2,
+        blackHole.x, blackHole.y, blackHole.radius
+      );
+      gradient.addColorStop(0, "black");
+      gradient.addColorStop(1, "rgba(0, 0, 0, 0.5)");
+      ctx.fillStyle = gradient;
+      ctx.arc(blackHole.x, blackHole.y, blackHole.radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 星を描画
+    function drawStars() {
+      stars.forEach((star) => {
+        ctx.beginPath();
+        ctx.arc(
+          star.x, star.y, star.size, 0, Math.PI * 2
+        );
+        ctx.fillStyle = "white";
+        ctx.fill();
+      });
+    }
+
+    // 星を引き寄せる処理
+    function updateStars() {
+      stars.forEach((star, index) => {
+        const dx = blackHole.x - star.x;
+        const dy = blackHole.y - star.y;
+        const distance = Math.hypot(dx, dy);
+
+        if (distance < blackHole.radius) {
+          // 星がブラックホールに吸い込まれる
+          stars.splice(index, 1);
+          score++;
+          blackHole.radius += 0.1; // ブラックホールが少しずつ成長
+          document.getElementById("scoreValue").textContent = score;
+        } else {
+          // 星がブラックホールに引き寄せられる
+          const pullStrength = blackHole.radius / distance;
+          star.x += dx * pullStrength * 0.02;
+          star.y += dy * pullStrength * 0.02;
+        }
+      });
+    }
+
+    // ゲームループ
+    function gameLoop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawStars();
+      drawBlackHole();
+      updateStars();
+      requestAnimationFrame(gameLoop);
+    }
+
+    // マウス操作でブラックホールを移動
+    canvas.addEventListener("mousemove", (e) => {
+      blackHole.x = e.clientX;
+      blackHole.y = e.clientY;
+    });
+
+    // 初期化
+    createStars();
+    gameLoop();
+  </script>
+</body>
+</html>
