@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>タイムマネジメントゲーム</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+
+    #game {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      border: 2px solid #ccc;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #tasks {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .task {
+      padding: 20px;
+      background-color: #e0e0e0;
+      border-radius: 5px;
+      text-align: center;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .task.active {
+      background-color: #f7d488;
+    }
+
+    #scoreboard {
+      margin-top: 20px;
+    }
+
+    #timer {
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: white;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>タイムマネジメントゲーム</h1>
+  <p>時間内にできるだけ多くのタスクを完了しましょう！</p>
+  <div id="game">
+    <div id="tasks">
+      <div class="task" data-id="1">タスク 1</div>
+      <div class="task" data-id="2">タスク 2</div>
+      <div class="task" data-id="3">タスク 3</div>
+      <div class="task" data-id="4">タスク 4</div>
+      <div class="task" data-id="5">タスク 5</div>
+      <div class="task" data-id="6">タスク 6</div>
+    </div>
+    <div id="scoreboard">
+      <p>スコア: <span id="score">0</span></p>
+      <p>残り時間: <span id="timer">30</span>秒</p>
+      <button id="restart" style="display: none;">もう一度プレイ</button>
+    </div>
+  </div>
+  <script>
+    const tasks = document.querySelectorAll(".task");
+    const scoreElement = document.getElementById("score");
+    const timerElement = document.getElementById("timer");
+    const restartButton = document.getElementById("restart");
+
+    let score = 0;
+    let timeLeft = 30;
+    let activeTask = null;
+    let timerInterval;
+
+    function getRandomTask() {
+      const index = Math.floor(Math.random() * tasks.length);
+      return tasks[index];
+    }
+
+    function activateTask() {
+      if (activeTask) activeTask.classList.remove("active");
+      activeTask = getRandomTask();
+      activeTask.classList.add("active");
+    }
+
+    function startGame() {
+      score = 0;
+      timeLeft = 30;
+      scoreElement.textContent = score;
+      timerElement.textContent = timeLeft;
+      restartButton.style.display = "none";
+
+      tasks.forEach(task => {
+        task.addEventListener("click", completeTask);
+      });
+
+      activateTask();
+
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        timerElement.textContent = timeLeft;
+
+        if (timeLeft <= 0) {
+          endGame();
+        }
+      }, 1000);
+    }
+
+    function completeTask(e) {
+      if (e.target === activeTask) {
+        score++;
+        scoreElement.textContent = score;
+        activateTask();
+      }
+    }
+
+    function endGame() {
+      clearInterval(timerInterval);
+      if (activeTask) activeTask.classList.remove("active");
+      activeTask = null;
+
+      tasks.forEach(task => {
+        task.removeEventListener("click", completeTask);
+      });
+
+      restartButton.style.display = "block";
+      alert(`ゲーム終了！あなたのスコア: ${score}`);
+    }
+
+    restartButton.addEventListener("click", startGame);
+
+    startGame();
+  </script>
+</body>
+</html>
