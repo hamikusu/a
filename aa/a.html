@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>リズムアクションゲーム</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    #game {
+      position: relative;
+      width: 400px;
+      height: 600px;
+      margin: 0 auto;
+      background-color: #fff;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .note {
+      position: absolute;
+      width: 80px;
+      height: 30px;
+      background-color: #007bff;
+      color: white;
+      text-align: center;
+      line-height: 30px;
+      border-radius: 5px;
+      left: calc(50% - 40px);
+    }
+
+    .target {
+      position: absolute;
+      bottom: 50px;
+      left: calc(50% - 50px);
+      width: 100px;
+      height: 30px;
+      background-color: #28a745;
+      border-radius: 5px;
+      text-align: center;
+      line-height: 30px;
+      color: white;
+    }
+
+    #scoreboard {
+      margin-top: 20px;
+    }
+
+    #score {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    #restart {
+      display: none;
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    #restart:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>リズムアクションゲーム</h1>
+  <p>ノーツがターゲットエリアに来たらスペースキーを押しましょう！</p>
+  <div id="game">
+    <div class="target">ターゲット</div>
+  </div>
+  <div id="scoreboard">
+    スコア: <span id="score">0</span>
+  </div>
+  <button id="restart">リスタート</button>
+
+  <script>
+    const gameArea = document.getElementById("game");
+    const scoreElement = document.getElementById("score");
+    const restartButton = document.getElementById("restart");
+    const target = document.querySelector(".target");
+
+    let score = 0;
+    let notes = [];
+    let isGameOver = false;
+    let gameInterval = null;
+
+    // ノーツを生成する関数
+    function createNote() {
+      const note = document.createElement("div");
+      note.classList.add("note");
+      note.style.top = "0px";
+      note.textContent = "🎵";
+      gameArea.appendChild(note);
+
+      let position = 0;
+      note.hittable = false;
+
+      const noteInterval = setInterval(() => {
+        if (isGameOver) {
+          clearInterval(noteInterval);
+          note.remove();
+          return;
+        }
+
+        position += 5; // ノーツの速度
+        note.style.top = `${position}px`;
+
+        // ノーツがターゲットエリアに来たら hittable にする
+        if (position >= gameArea.clientHeight - 120 && position <= gameArea.clientHeight - 50) {
+          note.hittable = true;
+          note.style.backgroundColor = "#ffcc00"; // 黄色にして分かりやすく
+        } else {
+          note.hittable = false;
+          note.style.backgroundColor = "#007bff"; // 通常色
+        }
+
+        // ノーツが画面外に出たらゲーム終了
+        if (position > gameArea.clientHeight) {
+          clearInterval(noteInterval);
+          note.remove();
+          gameOver();
+        }
+      }, 30);
+
+      notes.push({ element: note, interval: noteInterval });
+    }
+
+    // ゲーム開始
+    function startGame() {
+      score = 0;
+      scoreElement.textContent = score;
+      isGameOver = false;
+      restartButton.style.display = "none";
+
+      gameInterval = setInterval(() => {
+        createNote();
+      }, 1000);
+    }
+
+    // ゲーム終了
+    function gameOver() {
+      isGameOver = true;
+      clearInterval(gameInterval);
+      notes.forEach((note) => {
+        clearInterval(note.interval);
+        note.element.remove();
+      });
+      alert(`ゲーム終了！あなたのスコアは ${score} です！`);
+      restartButton.style.display = "block";
+    }
+
+    // スペースキーのイベント
+    document.addEventListener("keydown", (e) => {
+      if (e.code === "Space") {
+        for (let i = 0; i < notes.length; i++) {
+          const note = notes[i];
+          if (note.element.hittable) {
+            score++;
+            scoreElement.textContent = score;
+            clearInterval(note.interval);
+            note.element.remove();
+            notes.splice(i, 1);
+            break;
+          }
+        }
+      }
+    });
+
+    // リスタートボタン
+    restartButton.addEventListener("click", () => {
+      notes = [];
+      startGame();
+    });
+
+    // ゲーム初期化
+    startGame();
+  </script>
+</body>
+</html>
