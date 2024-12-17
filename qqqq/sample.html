@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>進化するライフゲーム</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #e0f7fa;
+      text-align: center;
+      color: #333;
+    }
+
+    h1 {
+      margin-top: 20px;
+    }
+
+    #game-container {
+      background-color: #ffffff;
+      width: 80%;
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    #creature {
+      font-size: 50px;
+      margin: 20px 0;
+    }
+
+    .option-btn {
+      padding: 10px 20px;
+      margin: 10px;
+      background-color: #00796b;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .option-btn:hover {
+      background-color: #004d40;
+    }
+
+    #message {
+      margin: 20px 0;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <h1>進化するライフゲーム</h1>
+  <div id="game-container">
+    <div id="creature">🌱</div>
+    <div id="message">あなたの生命体を進化させましょう！</div>
+    <div>
+      <button class="option-btn" id="eat-btn">🍃 草を食べる</button>
+      <button class="option-btn" id="hunt-btn">🍖 狩りをする</button>
+      <button class="option-btn" id="adapt-btn">🌍 環境に適応する</button>
+    </div>
+    <p>エネルギー: <span id="energy">0</span></p>
+  </div>
+
+  <script>
+    let energy = 0; // エネルギーの初期値
+    let stage = 0;  // 進化段階
+    const creature = document.getElementById("creature");
+    const message = document.getElementById("message");
+    const energyDisplay = document.getElementById("energy");
+    const eatBtn = document.getElementById("eat-btn");
+    const huntBtn = document.getElementById("hunt-btn");
+    const adaptBtn = document.getElementById("adapt-btn");
+
+    // 進化段階ごとのデータ
+    const stages = [
+      { icon: "🌱", name: "幼生", message: "小さな芽が出ました。" },
+      { icon: "🦗", name: "昆虫", message: "小さな昆虫に進化しました。" },
+      { icon: "🐇", name: "草食動物", message: "草食動物に進化し、穏やかな生活をしています。" },
+      { icon: "🐅", name: "肉食動物", message: "肉食動物に進化し、力強く狩りをしています。" },
+      { icon: "🐉", name: "ドラゴン", message: "伝説の生物ドラゴンに進化しました！" },
+    ];
+
+    // エネルギーを増やし進化をチェック
+    function increaseEnergy(amount, actionMessage) {
+      energy += amount;
+      energyDisplay.textContent = energy;
+
+      if (energy >= 10 && stage === 0) evolve(1);
+      if (energy >= 20 && stage === 1) evolve(2);
+      if (energy >= 35 && stage === 2) evolve(3);
+      if (energy >= 50 && stage === 3) evolve(4);
+
+      message.textContent = actionMessage;
+    }
+
+    // 進化する処理
+    function evolve(nextStage) {
+      stage = nextStage;
+      creature.textContent = stages[stage].icon;
+      message.textContent = stages[stage].message;
+    }
+
+    // ボタンのクリックイベント
+    eatBtn.addEventListener("click", () => {
+      increaseEnergy(2, "🍃 草を食べてエネルギーを少し回復しました。");
+    });
+
+    huntBtn.addEventListener("click", () => {
+      increaseEnergy(5, "🍖 狩りに成功！大きなエネルギーを得ました。");
+    });
+
+    adaptBtn.addEventListener("click", () => {
+      increaseEnergy(3, "🌍 環境に適応して生き延びています。");
+    });
+  </script>
+</body>
+</html>
