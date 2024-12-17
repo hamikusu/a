@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>色当てゲーム</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+    }
+
+    h1 {
+      margin-top: 20px;
+      color: #333;
+    }
+
+    #color-display {
+      font-size: 24px;
+      margin: 20px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .square-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .square {
+      width: 100px;
+      height: 100px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .square:hover {
+      transform: scale(1.1);
+    }
+
+    #message {
+      margin-top: 20px;
+      font-size: 20px;
+      color: #333;
+    }
+
+    #restart {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    #restart:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>色当てゲーム</h1>
+  <p>次の色を当ててください！</p>
+  <div id="color-display">RGB(0, 0, 0)</div>
+  <div class="square-container" id="square-container"></div>
+  <div id="message"></div>
+  <button id="restart">リスタート</button>
+
+  <script>
+    const colorDisplay = document.getElementById("color-display");
+    const squareContainer = document.getElementById("square-container");
+    const message = document.getElementById("message");
+    const restartButton = document.getElementById("restart");
+
+    let colors = [];
+    let pickedColor = "";
+
+    // ゲームの初期化
+    function init() {
+      colors = generateRandomColors(6); // 6色生成
+      pickedColor = pickColor(); // 正解の色を選ぶ
+      colorDisplay.textContent = pickedColor; // 表示するRGB値
+      message.textContent = ""; // メッセージのリセット
+      createColorSquares();
+    }
+
+    // 色付きの正方形を作成
+    function createColorSquares() {
+      squareContainer.innerHTML = ""; // コンテナをクリア
+
+      colors.forEach((color) => {
+        const square = document.createElement("div");
+        square.classList.add("square");
+        square.style.backgroundColor = color;
+
+        square.addEventListener("click", () => {
+          if (color === pickedColor) {
+            message.textContent = "🎉 正解！";
+            changeColors(pickedColor);
+          } else {
+            message.textContent = "❌ 不正解！もう一度。";
+            square.style.backgroundColor = "#f9f9f9"; // 間違った場合は非表示風
+          }
+        });
+
+        squareContainer.appendChild(square);
+      });
+    }
+
+    // 正解したらすべての正方形の色を変える
+    function changeColors(color) {
+      const squares = document.querySelectorAll(".square");
+      squares.forEach((square) => {
+        square.style.backgroundColor = color;
+      });
+    }
+
+    // ランダムな色を生成
+    function generateRandomColors(num) {
+      const colors = [];
+      for (let i = 0; i < num; i++) {
+        const r = Math.floor(Math.random() * 256);
+        const g = Math.floor(Math.random() * 256);
+        const b = Math.floor(Math.random() * 256);
+        colors.push(`rgb(${r}, ${g}, ${b})`);
+      }
+      return colors;
+    }
+
+    // 正解の色をランダムに選ぶ
+    function pickColor() {
+      const randomIndex = Math.floor(Math.random() * colors.length);
+      return colors[randomIndex];
+    }
+
+    // リスタートボタン
+    restartButton.addEventListener("click", init);
+
+    // 初期化
+    init();
+  </script>
+</body>
+</html>
