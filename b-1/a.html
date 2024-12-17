@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ジャンプアクションゲーム</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            background-color: #87CEEB;
+        }
+
+        #gameContainer {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background-color: #f4a261;
+            overflow: hidden;
+        }
+
+        #player {
+            position: absolute;
+            bottom: 50px;
+            left: 50px;
+            width: 50px;
+            height: 50px;
+            background-color: #2a9d8f;
+            border-radius: 5px;
+        }
+
+        .obstacle {
+            position: absolute;
+            bottom: 50px;
+            right: -100px;
+            width: 50px;
+            height: 50px;
+            background-color: #e63946;
+            animation: moveObstacle 3s linear infinite;
+        }
+
+        @keyframes moveObstacle {
+            from {
+                right: -100px;
+            }
+            to {
+                right: 100%;
+            }
+        }
+
+        #score {
+            font-size: 20px;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <div id="score">スコア: 0</div>
+        <div id="player"></div>
+    </div>
+
+    <script>
+        const player = document.getElementById('player');
+        const gameContainer = document.getElementById('gameContainer');
+        const scoreDisplay = document.getElementById('score');
+        let score = 0;
+        let isJumping = false;
+
+        // プレイヤーをジャンプさせる関数
+        function jump() {
+            if (isJumping) return;
+            isJumping = true;
+            let jumpHeight = 0;
+            const jumpInterval = setInterval(() => {
+                if (jumpHeight < 100) {
+                    jumpHeight += 5;
+                    player.style.bottom = `${50 + jumpHeight}px`;
+                } else {
+                    clearInterval(jumpInterval);
+                    const fallInterval = setInterval(() => {
+                        if (jumpHeight > 0) {
+                            jumpHeight -= 5;
+                            player.style.bottom = `${50 + jumpHeight}px`;
+                        } else {
+                            clearInterval(fallInterval);
+                            isJumping = false;
+                        }
+                    }, 20);
+                }
+            }, 20);
+        }
+
+        // 障害物を生成する関数
+        function createObstacle() {
+            const obstacle = document.createElement('div');
+            obstacle.classList.add('obstacle');
+            gameContainer.appendChild(obstacle);
+
+            const obstacleInterval = setInterval(() => {
+                const obstacleRect = obstacle.getBoundingClientRect();
+                const playerRect = player.getBoundingClientRect();
+
+                // 衝突判定
+                if (
+                    obstacleRect.left < playerRect.right &&
+                    obstacleRect.right > playerRect.left &&
+                    obstacleRect.top < playerRect.bottom &&
+                    obstacleRect.bottom > playerRect.top
+                ) {
+                    alert(`ゲームオーバー！スコア: ${score}`);
+                    clearInterval(obstacleInterval);
+                    gameContainer.innerHTML = `<div id="score">スコア: 0</div><div id="player"></div>`;
+                    score = 0;
+                    initGame();
+                }
+
+                // 障害物が画面外に出たら削除
+                if (obstacleRect.right <= 0) {
+                    clearInterval(obstacleInterval);
+                    obstacle.remove();
+                    score++;
+                    scoreDisplay.textContent = `スコア: ${score}`;
+                }
+            }, 20);
+        }
+
+        // ゲーム初期化関数
+        function initGame() {
+            setInterval(createObstacle, 2000);
+        }
+
+        // ジャンプイベント
+        document.addEventListener('keydown', (event) => {
+            if (event.code === 'Space') {
+                jump();
+            }
+        });
+
+        // ゲーム開始
+        initGame();
+    </script>
+</body>
+</html>
