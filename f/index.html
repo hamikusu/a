@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>インタラクティブな3Dカード</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      display: flex;
+      gap: 30px;
+      perspective: 1000px;
+    }
+
+    .card {
+      position: relative;
+      width: 200px;
+      height: 300px;
+      background: linear-gradient(135deg, #6dd5ed, #2193b0);
+      border-radius: 15px;
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s ease;
+      transform-style: preserve-3d;
+    }
+
+    .card-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      transform: translateZ(30px);
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      width: 100%;
+      height: 100%;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-radius: 15px;
+      transform: translateZ(50px);
+      pointer-events: none;
+    }
+
+    h1 {
+      position: absolute;
+      top: 20px;
+      text-align: center;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <h1>インタラクティブな3Dカード</h1>
+  <div class="container">
+    <div class="card" data-text="カード 1">
+      <div class="card-content">🐶 犬</div>
+    </div>
+    <div class="card" data-text="カード 2">
+      <div class="card-content">🐱 猫</div>
+    </div>
+    <div class="card" data-text="カード 3">
+      <div class="card-content">🦁 ライオン</div>
+    </div>
+  </div>
+
+  <script>
+    const cards = document.querySelectorAll(".card");
+
+    cards.forEach((card) => {
+      card.addEventListener("mousemove", (e) => {
+        const cardRect = card.getBoundingClientRect();
+        const cardWidth = cardRect.width;
+        const cardHeight = cardRect.height;
+
+        // カーソルの位置を計算
+        const centerX = cardRect.left + cardWidth / 2;
+        const centerY = cardRect.top + cardHeight / 2;
+        const offsetX = (e.clientX - centerX) / cardWidth;
+        const offsetY = (e.clientY - centerY) / cardHeight;
+
+        // 傾きの角度
+        const tiltX = offsetY * 15; // 上下の傾き
+        const tiltY = -offsetX * 15; // 左右の傾き
+
+        card.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+      });
+
+      card.addEventListener("mouseleave", () => {
+        // マウスが離れたらリセット
+        card.style.transform = "rotateX(0deg) rotateY(0deg)";
+      });
+    });
+  </script>
+</body>
+</html>
