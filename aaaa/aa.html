@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>絵文字付き動物ギャラリー</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .animal-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .animal {
+      width: 120px;
+      height: 120px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      background-color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.3s, background-color 0.3s;
+      font-size: 24px;
+    }
+
+    .animal:hover {
+      transform: scale(1.1);
+      background-color: #e6ffe6;
+    }
+
+    #animal-info {
+      margin-top: 20px;
+      padding: 10px;
+      font-size: 20px;
+      background-color: #eee;
+      color: #333;
+      border-radius: 5px;
+      display: inline-block;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <h1>絵文字付き動物ギャラリー</h1>
+  <p>動物をクリックして名前や豆知識を見てみましょう！</p>
+
+  <div class="animal-container">
+    <div class="animal" data-name="🐶 犬" data-info="犬は人間の親友として知られ、忠実なペットです。">
+      🐶<div>犬</div>
+    </div>
+    <div class="animal" data-name="🐱 猫" data-info="猫は独立心が強く、柔軟な体を持つ動物です。">
+      🐱<div>猫</div>
+    </div>
+    <div class="animal" data-name="🐘 象" data-info="象は地上で最大の動物で、長い鼻が特徴です。">
+      🐘<div>象</div>
+    </div>
+    <div class="animal" data-name="🦁 ライオン" data-info="ライオンは百獣の王と呼ばれ、強力な捕食者です。">
+      🦁<div>ライオン</div>
+    </div>
+    <div class="animal" data-name="🐧 ペンギン" data-info="ペンギンは南極に生息し、泳ぎが得意です。">
+      🐧<div>ペンギン</div>
+    </div>
+  </div>
+
+  <div id="animal-info">動物をクリックするとここに説明が表示されます！</div>
+
+  <script>
+    const animals = document.querySelectorAll(".animal");
+    const infoBox = document.getElementById("animal-info");
+
+    // 各動物にクリックイベントを追加
+    animals.forEach(animal => {
+      animal.addEventListener("click", () => {
+        const name = animal.dataset.name;
+        const info = animal.dataset.info;
+
+        // 情報ボックスに表示
+        infoBox.textContent = `${name}: ${info}`;
+      });
+    });
+  </script>
+</body>
+</html>
