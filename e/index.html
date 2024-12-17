@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>モーダルポップアップの例</title>
+  <style>
+    /* 全体のスタイル */
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+    }
+
+    h1 {
+      margin-top: 20px;
+      color: #333;
+    }
+
+    /* ボタンスタイル */
+    #openModalBtn {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+
+    #openModalBtn:hover {
+      background-color: #0056b3;
+    }
+
+    /* モーダルの背景 (オーバーレイ) */
+    .modal-overlay {
+      display: none; /* 初期状態では非表示 */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+    }
+
+    /* モーダルコンテンツ */
+    .modal-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #fff;
+      padding: 20px;
+      width: 300px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* 閉じるボタン */
+    #closeModalBtn {
+      margin-top: 15px;
+      padding: 5px 10px;
+      cursor: pointer;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+
+    #closeModalBtn:hover {
+      background-color: #c82333;
+    }
+  </style>
+</head>
+<body>
+  <h1>モーダルポップアップの例</h1>
+  <p>下のボタンをクリックするとモーダルウィンドウが表示されます。</p>
+
+  <!-- モーダルを開くボタン -->
+  <button id="openModalBtn">モーダルを開く</button>
+
+  <!-- モーダル本体 -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-content">
+      <h2>モーダルウィンドウ</h2>
+      <p>ここにお好きな内容を表示できます！</p>
+      <button id="closeModalBtn">閉じる</button>
+    </div>
+  </div>
+
+  <script>
+    const openModalBtn = document.getElementById("openModalBtn");
+    const closeModalBtn = document.getElementById("closeModalBtn");
+    const modalOverlay = document.getElementById("modalOverlay");
+
+    // モーダルを開く
+    openModalBtn.addEventListener("click", () => {
+      modalOverlay.style.display = "block";
+    });
+
+    // モーダルを閉じる
+    closeModalBtn.addEventListener("click", () => {
+      modalOverlay.style.display = "none";
+    });
+
+    // 背景をクリックしてモーダルを閉じる
+    modalOverlay.addEventListener("click", (e) => {
+      if (e.target === modalOverlay) {
+        modalOverlay.style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>
