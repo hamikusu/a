@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>高難易度脱出ゲーム</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      background-color: #222;
+      color: #fff;
+    }
+
+    h1 {
+      margin-top: 20px;
+    }
+
+    #game-container {
+      position: relative;
+      width: 500px;
+      height: 400px;
+      margin: 20px auto;
+      background-color: #333;
+      border: 2px solid #555;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #message {
+      margin: 10px 0;
+      font-size: 16px;
+      color: yellow;
+    }
+
+    .puzzle-btn {
+      background-color: #444;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 14px;
+      margin: 10px;
+    }
+
+    .puzzle-btn:hover {
+      background-color: #555;
+    }
+
+    .hint {
+      font-size: 14px;
+      margin: 5px 0;
+      color: cyan;
+    }
+
+    #door {
+      width: 100px;
+      height: 200px;
+      background-color: #8b4513;
+      border: 3px solid #654321;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .item {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      background-color: gold;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>高難易度脱出ゲーム</h1>
+  <p>すべての謎を解き、鍵を手に入れて脱出しましょう！</p>
+
+  <div id="game-container">
+    <div id="door">扉</div>
+    <div id="puzzle1" class="hidden">
+      <p>謎1: パスワードを入力せよ</p>
+      <input type="text" id="password" placeholder="4桁の数字">
+      <button class="puzzle-btn" id="submit-password">送信</button>
+      <p class="hint">ヒント: 2+2=4</p>
+    </div>
+
+    <div id="puzzle2" class="hidden">
+      <p>謎2: 隠れたボタンをクリックせよ</p>
+      <button class="puzzle-btn" id="hidden-btn" style="position:absolute; top:50px; left:150px;">隠しボタン</button>
+    </div>
+
+    <div id="puzzle3" class="hidden">
+      <p>謎3: 鍵を見つけよ</p>
+      <div class="item" id="key" style="top: 70%; left: 60%;"></div>
+      <div class="item" style="top: 20%; left: 20%;"></div>
+      <div class="item" style="top: 50%; left: 40%;"></div>
+    </div>
+  </div>
+
+  <div id="message"></div>
+
+  <script>
+    const door = document.getElementById("door");
+    const puzzle1 = document.getElementById("puzzle1");
+    const puzzle2 = document.getElementById("puzzle2");
+    const puzzle3 = document.getElementById("puzzle3");
+    const passwordInput = document.getElementById("password");
+    const submitPassword = document.getElementById("submit-password");
+    const hiddenBtn = document.getElementById("hidden-btn");
+    const key = document.getElementById("key");
+    const message = document.getElementById("message");
+
+    let hasKey = false;
+
+    // 扉クリック
+    door.addEventListener("click", () => {
+      if (!puzzle1.classList.contains("hidden")) {
+        message.textContent = "まずは謎1を解きましょう！";
+      } else if (!puzzle2.classList.contains("hidden")) {
+        message.textContent = "まだ謎2が残っています！";
+      } else if (!puzzle3.classList.contains("hidden")) {
+        message.textContent = "最後の謎を解いてください！";
+      } else if (hasKey) {
+        message.textContent = "🎉 脱出成功！おめでとう！";
+        door.textContent = "脱出！";
+      } else {
+        message.textContent = "🔒 鍵が必要です！";
+      }
+    });
+
+    // 謎1: パスワード入力
+    submitPassword.addEventListener("click", () => {
+      if (passwordInput.value === "1234") {
+        message.textContent = "🔓 謎1クリア！次の謎が現れました！";
+        puzzle1.classList.add("hidden");
+        puzzle2.classList.remove("hidden");
+      } else {
+        message.textContent = "❌ パスワードが違います！";
+      }
+    });
+
+    // 謎2: 隠れたボタン
+    hiddenBtn.addEventListener("click", () => {
+      message.textContent = "🔓 謎2クリア！最後の謎が現れました！";
+      puzzle2.classList.add("hidden");
+      puzzle3.classList.remove("hidden");
+    });
+
+    // 謎3: 鍵の取得
+    key.addEventListener("click", () => {
+      hasKey = true;
+      key.style.display = "none";
+      message.textContent = "🔑 鍵を手に入れました！扉を開けましょう！";
+    });
+
+    // ゲーム開始
+    puzzle1.classList.remove("hidden");
+  </script>
+</body>
+</html>
