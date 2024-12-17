@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>国旗と首都クイズ</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 20px;
+      color: #333;
+    }
+
+    #quiz-container {
+      background-color: #fff;
+      width: 80%;
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    #flag {
+      width: 200px;
+      margin-bottom: 20px;
+    }
+
+    .option {
+      display: inline-block;
+      margin: 10px;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .option:hover {
+      background-color: #0056b3;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    #restart {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      display: none;
+    }
+
+    #restart:hover {
+      background-color: #218838;
+    }
+  </style>
+</head>
+<body>
+  <h1>国旗と首都クイズ</h1>
+  <div id="quiz-container">
+    <img id="flag" src="" alt="国旗">
+    <div id="question"></div>
+    <div id="options"></div>
+    <div id="result"></div>
+    <button id="restart">もう一度プレイ</button>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        question: "この国の首都はどこですか？",
+        flag: "https://flagcdn.com/w320/jp.png",
+        correct: "東京",
+        options: ["ソウル", "北京", "東京", "バンコク"]
+      },
+      {
+        question: "この国の首都はどこですか？",
+        flag: "https://flagcdn.com/w320/fr.png",
+        correct: "パリ",
+        options: ["ロンドン", "ローマ", "ベルリン", "パリ"]
+      },
+      {
+        question: "この国の首都はどこですか？",
+        flag: "https://flagcdn.com/w320/us.png",
+        correct: "ワシントンD.C.",
+        options: ["ニューヨーク", "ロサンゼルス", "ワシントンD.C.", "シカゴ"]
+      },
+      {
+        question: "この国の首都はどこですか？",
+        flag: "https://flagcdn.com/w320/gb.png",
+        correct: "ロンドン",
+        options: ["マドリード", "ロンドン", "パリ", "ベルリン"]
+      }
+    ];
+
+    const flagImg = document.getElementById("flag");
+    const questionText = document.getElementById("question");
+    const optionsContainer = document.getElementById("options");
+    const resultText = document.getElementById("result");
+    const restartButton = document.getElementById("restart");
+
+    let currentQuestion = 0;
+
+    // 問題を表示する関数
+    function loadQuestion() {
+      const currentData = quizData[currentQuestion];
+      flagImg.src = currentData.flag;
+      questionText.textContent = currentData.question;
+      optionsContainer.innerHTML = "";
+
+      currentData.options.forEach(option => {
+        const button = document.createElement("button");
+        button.textContent = option;
+        button.classList.add("option");
+        button.addEventListener("click", () => checkAnswer(option));
+        optionsContainer.appendChild(button);
+      });
+
+      resultText.textContent = "";
+      restartButton.style.display = "none";
+    }
+
+    // 正解をチェックする関数
+    function checkAnswer(answer) {
+      const currentData = quizData[currentQuestion];
+      if (answer === currentData.correct) {
+        resultText.textContent = "🎉 正解！";
+        resultText.style.color = "green";
+      } else {
+        resultText.textContent = `❌ 不正解！正解は「${currentData.correct}」です。`;
+        resultText.style.color = "red";
+      }
+
+      currentQuestion++;
+      if (currentQuestion < quizData.length) {
+        setTimeout(loadQuestion, 1500); // 次の問題を表示
+      } else {
+        setTimeout(() => {
+          resultText.textContent = "🎉 すべての問題が終了しました！";
+          restartButton.style.display = "inline-block";
+        }, 1500);
+      }
+    }
+
+    // リスタート関数
+    restartButton.addEventListener("click", () => {
+      currentQuestion = 0;
+      loadQuestion();
+    });
+
+    // 初期化
+    loadQuestion();
+  </script>
+</body>
+</html>
