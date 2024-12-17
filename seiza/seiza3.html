@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>今見える星座ゲーム</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #121212;
+      color: #f8f9fa;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      margin: 20px 0;
+    }
+
+    #quiz-container {
+      background-color: #1e1e1e;
+      width: 80%;
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    #question {
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+
+    .option {
+      display: block;
+      margin: 10px auto;
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 80%;
+      transition: background-color 0.3s;
+    }
+
+    .option:hover {
+      background-color: #0056b3;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>今見える星座ゲーム</h1>
+  <div id="quiz-container">
+    <div id="question">現在の季節に見える星座はどれ？</div>
+    <div id="options"></div>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const seasonData = {
+      "春": ["しし座", "うみへび座", "おとめ座"],
+      "夏": ["さそり座", "はくちょう座", "こと座"],
+      "秋": ["ペガスス座", "アンドロメダ座", "カシオペヤ座"],
+      "冬": ["オリオン座", "ふたご座", "おおいぬ座"]
+    };
+
+    const questionText = document.getElementById("question");
+    const optionsContainer = document.getElementById("options");
+    const resultText = document.getElementById("result");
+
+    let currentSeason = "";
+
+    // 季節を判定する関数
+    function getCurrentSeason() {
+      const month = new Date().getMonth() + 1; // 現在の月を取得
+      if (month >= 3 && month <= 5) return "春";
+      if (month >= 6 && month <= 8) return "夏";
+      if (month >= 9 && month <= 11) return "秋";
+      return "冬";
+    }
+
+    // クイズを表示する関数
+    function loadQuiz() {
+      currentSeason = getCurrentSeason();
+      questionText.textContent = `現在の季節は「${currentSeason}」です。今見える星座はどれ？`;
+
+      const correctAnswer = seasonData[currentSeason][Math.floor(Math.random() * seasonData[currentSeason].length)];
+      const options = generateOptions(correctAnswer);
+
+      optionsContainer.innerHTML = ""; // 選択肢をクリア
+      options.forEach(option => {
+        const button = document.createElement("button");
+        button.textContent = option;
+        button.classList.add("option");
+        button.addEventListener("click", () => checkAnswer(option, correctAnswer));
+        optionsContainer.appendChild(button);
+      });
+
+      resultText.textContent = "";
+    }
+
+    // 選択肢をランダムに生成
+    function generateOptions(correctAnswer) {
+      const allStars = Object.values(seasonData).flat();
+      const options = new Set([correctAnswer]);
+      while (options.size < 4) {
+        const randomStar = allStars[Math.floor(Math.random() * allStars.length)];
+        options.add(randomStar);
+      }
+      return Array.from(options).sort(() => Math.random() - 0.5);
+    }
+
+    // 答えをチェックする関数
+    function checkAnswer(answer, correctAnswer) {
+      if (answer === correctAnswer) {
+        resultText.textContent = "🎉 正解！";
+        resultText.style.color = "lightgreen";
+      } else {
+        resultText.textContent = `❌ 不正解！正解は「${correctAnswer}」です。`;
+        resultText.style.color = "red";
+      }
+    }
+
+    // 初期化
+    loadQuiz();
+  </script>
+</body>
+</html>
