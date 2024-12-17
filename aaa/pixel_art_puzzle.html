@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ピクセルアートパズル</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    #container {
+      display: flex;
+      justify-content: center;
+      gap: 50px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 50px);
+      grid-gap: 5px;
+      justify-content: center;
+    }
+
+    .cell {
+      width: 50px;
+      height: 50px;
+      border: 1px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: white;
+    }
+
+    .color-piece {
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+      border-radius: 3px;
+    }
+
+    #restart {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    #restart:hover {
+      background-color: #0056b3;
+    }
+
+    #status {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    #sample h3 {
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>ピクセルアートパズル</h1>
+  <p>見本を参考にドラッグ＆ドロップで色を正しい場所に配置しましょう！</p>
+  <div id="container">
+    <!-- ゲームエリア -->
+    <div>
+      <h3>パズルエリア</h3>
+      <div id="game" class="grid"></div>
+    </div>
+    <!-- 完成形見本 -->
+    <div id="sample">
+      <h3>完成見本</h3>
+      <div class="grid" id="target"></div>
+    </div>
+  </div>
+  <button id="restart">リスタート</button>
+  <div id="status"></div>
+
+  <script>
+    const gridSize = 3; // グリッドのサイズ (3x3)
+    const targetPattern = [
+      "red", "green", "blue",
+      "yellow", "white", "pink",
+      "orange", "purple", "cyan"
+    ];
+    let currentPattern = [...targetPattern].sort(() => Math.random() - 0.5);
+
+    const gameContainer = document.getElementById("game");
+    const targetContainer = document.getElementById("target");
+    const restartButton = document.getElementById("restart");
+    const statusElement = document.getElementById("status");
+
+    // グリッドを作成する
+    function createGrid(container, pattern, draggable = false) {
+      container.innerHTML = "";
+      pattern.forEach((color, index) => {
+        const cell = document.createElement("div");
+        cell.classList.add("cell");
+        cell.dataset.index = index;
+
+        if (color !== "white") {
+          const piece = document.createElement("div");
+          piece.classList.add("color-piece");
+          piece.style.backgroundColor = color;
+          if (draggable) piece.draggable = true;
+
+          if (draggable) {
+            piece.addEventListener("dragstart", (e) => {
+              e.dataTransfer.setData("text/plain", index);
+            });
+          }
+
+          cell.appendChild(piece);
+        }
+
+        if (draggable) {
+          cell.addEventListener("dragover", (e) => e.preventDefault());
+          cell.addEventListener("drop", (e) => {
+            const draggedIndex = e.dataTransfer.getData("text/plain");
+            const targetIndex = cell.dataset.index;
+
+            if (draggedIndex !== targetIndex) {
+              swapColors(draggedIndex, targetIndex);
+            }
+          });
+        }
+
+        container.appendChild(cell);
+      });
+    }
+
+    function swapColors(draggedIndex, targetIndex) {
+      const temp = currentPattern[draggedIndex];
+      currentPattern[draggedIndex] = currentPattern[targetIndex];
+      currentPattern[targetIndex] = temp;
+      checkCompletion();
+      createGrid(gameContainer, currentPattern, true);
+    }
+
+    function checkCompletion() {
+      const isCompleted = targetPattern.every((color, index) => color === currentPattern[index]);
+      if (isCompleted) {
+        statusElement.textContent = "🎉 完成しました！";
+      } else {
+        statusElement.textContent = "";
+      }
+    }
+
+    restartButton.addEventListener("click", () => {
+      currentPattern = [...targetPattern].sort(() => Math.random() - 0.5);
+      statusElement.textContent = "";
+      createGrid(gameContainer, currentPattern, true);
+    });
+
+    // 初期化
+    createGrid(gameContainer, currentPattern, true);
+    createGrid(targetContainer, targetPattern, false);
+  </script>
+</body>
+</html>
